@@ -1,8 +1,10 @@
 package org.jaeyo.clien_stream.entity;
 
+import java.io.Serializable;
+
 import com.mongodb.BasicDBObject;
 
-public class BbsItem extends BasicDBObject{
+public class BbsItem implements Serializable{
 	private long num;
 	private String title;
 	private String nick;
@@ -12,16 +14,17 @@ public class BbsItem extends BasicDBObject{
 	private String bbsName;
 	private ArticleItem article;
 
-	public BbsItem(BasicDBObject dbObj){
+	public BbsItem(BasicDBObject dbObj) {
 		setNum(dbObj.getLong("num"));
 		setTitle(dbObj.getString("title"));
 		setImgNickPath(dbObj.getString("imgNickPath"));
 		setDate(dbObj.getLong("date"));
 		setHit(dbObj.getLong("hit"));
 		setBbsName(dbObj.getString("bbsName"));
-		setArticle(new ArticleItem((BasicDBObject)dbObj.get("article")));
-	} //INIT
-	
+		if(dbObj.get("article")!=null)
+			setArticle(new ArticleItem((BasicDBObject) dbObj.get("article")));
+	} // INIT
+
 	public BbsItem(long num, String title, String nick, String imgNickPath, long date, long hit, String bbsName) {
 		setNum(num);
 		setTitle(title);
@@ -29,7 +32,7 @@ public class BbsItem extends BasicDBObject{
 		setDate(date);
 		setHit(hit);
 		setBbsName(bbsName);
-	} //INIT
+	} // INIT
 
 	public long getNum() {
 		return num;
@@ -37,7 +40,6 @@ public class BbsItem extends BasicDBObject{
 
 	public void setNum(long num) {
 		this.num = num;
-		put("num", num);
 	}
 
 	public String getTitle() {
@@ -46,7 +48,6 @@ public class BbsItem extends BasicDBObject{
 
 	public void setTitle(String title) {
 		this.title = title;
-		put("title", title);
 	}
 
 	public String getNick() {
@@ -55,7 +56,6 @@ public class BbsItem extends BasicDBObject{
 
 	public void setNick(String nick) {
 		this.nick = nick;
-		put("nick", nick);
 	}
 
 	public String getImgNickPath() {
@@ -64,7 +64,6 @@ public class BbsItem extends BasicDBObject{
 
 	public void setImgNickPath(String imgNickPath) {
 		this.imgNickPath = imgNickPath;
-		put("imgNickPath", imgNickPath);
 	}
 
 	public long getDate() {
@@ -73,7 +72,6 @@ public class BbsItem extends BasicDBObject{
 
 	public void setDate(long date) {
 		this.date = date;
-		put("date", date);
 	}
 
 	public long getHit() {
@@ -82,7 +80,6 @@ public class BbsItem extends BasicDBObject{
 
 	public void setHit(long hit) {
 		this.hit = hit;
-		put("hit", hit);
 	}
 
 	public String getBbsName() {
@@ -91,7 +88,6 @@ public class BbsItem extends BasicDBObject{
 
 	public void setBbsName(String bbsName) {
 		this.bbsName = bbsName;
-		put("bbsName", bbsName);
 	}
 
 	public ArticleItem getArticle() {
@@ -100,6 +96,20 @@ public class BbsItem extends BasicDBObject{
 
 	public void setArticle(ArticleItem article) {
 		this.article = article;
-		put("article", article);
 	}
-} // class
+
+	public BasicDBObject toDBObject() {
+		BasicDBObject dbObj = new BasicDBObject();
+		dbObj.put("num", getNum());
+		dbObj.put("title", getTitle());
+		dbObj.put("imgNickPath", getImgNickPath());
+		dbObj.put("date", getDate());
+		dbObj.put("hit", getHit());
+		dbObj.put("bbsName", getBbsName());
+		
+		if(getArticle()!=null)
+			dbObj.put("article", getArticle().toDBObject());
+		
+		return dbObj;
+	} // toDBObject
+} // class /

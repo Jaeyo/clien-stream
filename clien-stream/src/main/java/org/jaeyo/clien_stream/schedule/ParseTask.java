@@ -5,12 +5,9 @@ import java.util.List;
 import java.util.TimerTask;
 import java.util.function.Predicate;
 
-import javax.jms.JMSException;
-
 import org.jaeyo.clien_stream.consts.BbsNames;
 import org.jaeyo.clien_stream.entity.ArticleItem;
 import org.jaeyo.clien_stream.entity.BbsItem;
-import org.jaeyo.clien_stream.mq.ActiveMQAdapter;
 import org.jaeyo.clien_stream.parser.BbsParser;
 import org.jaeyo.clien_stream.repo.mongodb.MongoDbAdapter;
 import org.slf4j.Logger;
@@ -19,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
@@ -74,7 +70,7 @@ public class ParseTask extends TimerTask {
 	
 		List<DBObject> inserts=new ArrayList<DBObject>();
 		for(BbsItem item : items)
-			inserts.add(item);
+			inserts.add(item.toDBObject());
 		coll.insert(inserts);
 	} //insertBbsItem
 	
@@ -88,15 +84,21 @@ public class ParseTask extends TimerTask {
 		return unstoredArticleNums;
 	} //findUnstoredArticle
 	
-	private void updateArticle(long num, ArticleItem article){
+	private boolean updateArticle(long num, ArticleItem article){
 		String collectionName=String.format("bbsItem_%s", bbsName);
 		DBCollection coll=MongoDbAdapter.getInstance().getCollection(collectionName);
 		
 		DBObject whereQueryDbObj=(DBObject)JSON.parse(String.format("{num : { $eq : %s }}", num));
 		BasicDBObject storedDbObj=(BasicDBObject) coll.find(whereQueryDbObj).next();
+		if(storedDbObj==null) {
+			logger.warn("failed to update article, bbs item with num {} does not exists");
+			return false;
+		} //if
+		
 		BbsItem storedBbsItem=new BbsItem(storedDbObj);
 		
 		storedBbsItem.setArticle(article);
-		coll.update(whereQueryDbObj, storedBbsItem);
+		coll.update(whereQueryDbObj, storedBbsItem.toDBObject());
+		return true;
 	} //updateArticle
 } // class
