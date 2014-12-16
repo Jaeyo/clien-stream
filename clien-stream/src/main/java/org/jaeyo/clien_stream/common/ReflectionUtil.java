@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public class ReflectionUtil {
+
 	public static <T> T invokePrivateMethod(Class<?> clazz, String methodName, Class<T> returnType, Object... args) {
 		Class<?>[] parameters = new Class<?>[args.length];
 		for (int i = 0; i < args.length; i++) {
@@ -11,14 +12,38 @@ public class ReflectionUtil {
 		} // for i
 		return invokePrivateMethod(clazz, methodName, returnType, parameters, args);
 	} // oinvokeMethod
+	
+	public static <T> T invokePrivateMethod(Object instance, Class<?> clazz, String methodName, Class<T> returnType, Object... args) {
+		if(args==null)
+			return invokePrivateMethod(instance, clazz, methodName, returnType, null, null);
+		
+		Class<?>[] parameters = new Class<?>[args.length];
+		for (int i = 0; i < args.length; i++) {
+			parameters[i] = args[i].getClass();
+		} // for i
+		return invokePrivateMethod(instance, clazz, methodName, returnType, parameters, args);
+	} // oinvokeMethod
 
-	public static <T> T invokePrivateMethod(Class<?> clazz, String methodName, Class<T> returnType,
-			Class<?>[] argsClazz, Object... args) {
+	public static <T> T invokePrivateMethod(Class<?> clazz, String methodName, Class<T> returnType, Class<?>[] argsClazz, Object[] args) {
 		try {
 			Object obj = clazz.newInstance();
-			Method method = clazz.getDeclaredMethod(methodName, argsClazz);
-			method.setAccessible(true);
-			return (T) method.invoke(obj, args);
+			return invokePrivateMethod(obj, clazz, methodName, returnType, argsClazz, args);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} // catch
+	} // oinvokeMethod
+	
+	public static <T> T invokePrivateMethod(Object instance, Class<?> clazz, String methodName, Class<T> returnType, Class<?>[] argsClazz, Object[] args) {
+		try {
+			if(argsClazz==null && args==null){
+				Method method = clazz.getDeclaredMethod(methodName);
+				method.setAccessible(true);
+				return (T) method.invoke(instance);
+			} else{
+				Method method = clazz.getDeclaredMethod(methodName, argsClazz);
+				method.setAccessible(true);
+				return (T) method.invoke(instance, args);
+			} //if
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		} // catch

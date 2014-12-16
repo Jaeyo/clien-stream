@@ -1,11 +1,8 @@
 package org.jaeyo.clien_stream.entity;
 
-import java.io.Serializable;
-
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
-public class BbsItem implements Serializable{
+public class BbsItem extends BasicDBObject{
 	private long num;
 	private String title;
 	private String nick;
@@ -13,16 +10,26 @@ public class BbsItem implements Serializable{
 	private long date;
 	private long hit;
 	private String bbsName;
+	private ArticleItem article;
 
+	public BbsItem(BasicDBObject dbObj){
+		setNum(dbObj.getLong("num"));
+		setTitle(dbObj.getString("title"));
+		setImgNickPath(dbObj.getString("imgNickPath"));
+		setDate(dbObj.getLong("date"));
+		setHit(dbObj.getLong("hit"));
+		setBbsName(dbObj.getString("bbsName"));
+		setArticle(new ArticleItem((BasicDBObject)dbObj.get("article")));
+	} //INIT
+	
 	public BbsItem(long num, String title, String nick, String imgNickPath, long date, long hit, String bbsName) {
-		this.num = num;
-		this.title = title;
-		this.nick = nick;
-		this.imgNickPath = imgNickPath;
-		this.date = date;
-		this.hit = hit;
-		this.bbsName = bbsName;
-	}
+		setNum(num);
+		setTitle(title);
+		setImgNickPath(imgNickPath);
+		setDate(date);
+		setHit(hit);
+		setBbsName(bbsName);
+	} //INIT
 
 	public long getNum() {
 		return num;
@@ -30,6 +37,7 @@ public class BbsItem implements Serializable{
 
 	public void setNum(long num) {
 		this.num = num;
+		put("num", num);
 	}
 
 	public String getTitle() {
@@ -38,6 +46,7 @@ public class BbsItem implements Serializable{
 
 	public void setTitle(String title) {
 		this.title = title;
+		put("title", title);
 	}
 
 	public String getNick() {
@@ -46,6 +55,7 @@ public class BbsItem implements Serializable{
 
 	public void setNick(String nick) {
 		this.nick = nick;
+		put("nick", nick);
 	}
 
 	public String getImgNickPath() {
@@ -54,6 +64,7 @@ public class BbsItem implements Serializable{
 
 	public void setImgNickPath(String imgNickPath) {
 		this.imgNickPath = imgNickPath;
+		put("imgNickPath", imgNickPath);
 	}
 
 	public long getDate() {
@@ -62,6 +73,7 @@ public class BbsItem implements Serializable{
 
 	public void setDate(long date) {
 		this.date = date;
+		put("date", date);
 	}
 
 	public long getHit() {
@@ -70,6 +82,7 @@ public class BbsItem implements Serializable{
 
 	public void setHit(long hit) {
 		this.hit = hit;
+		put("hit", hit);
 	}
 
 	public String getBbsName() {
@@ -78,16 +91,15 @@ public class BbsItem implements Serializable{
 
 	public void setBbsName(String bbsName) {
 		this.bbsName = bbsName;
+		put("bbsName", bbsName);
 	}
-	
-	public DBObject toDBObject(){
-		BasicDBObject retDbObj = new BasicDBObject();
-		retDbObj.append("_id", getNum());
-		retDbObj.append("title", getTitle());
-		retDbObj.append("nick", getNick());
-		retDbObj.append("imgNickPath", getImgNickPath());
-		retDbObj.append("date", getDate());
-		retDbObj.append("hit", getHit());	
-		return retDbObj;
-	} //toDBObject
+
+	public ArticleItem getArticle() {
+		return article;
+	}
+
+	public void setArticle(ArticleItem article) {
+		this.article = article;
+		put("article", article);
+	}
 } // class

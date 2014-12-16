@@ -7,6 +7,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jaeyo.clien_stream.consts.BbsNames;
+import org.jaeyo.clien_stream.entity.ArticleItem;
+import org.jaeyo.clien_stream.entity.ArticleReplyItem;
 import org.jaeyo.clien_stream.entity.BbsItem;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,9 +21,10 @@ import org.slf4j.LoggerFactory;
 public class BbsParserImpl implements BbsParser {
 	private static final Logger logger = LoggerFactory.getLogger(BbsParserImpl.class);
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static SimpleDateFormat dateFormat2 = new SimpleDateFormat("(yyyy-MM-dd HH:mm)");
 
 	@Override
-	public ArrayList<BbsItem> parsePage(String bbsName, int page) {
+	public ArrayList<BbsItem> parseBbs(String bbsName, int page) {
 		String url = String.format("http://www.clien.net/cs2/bbs/board.php?bo_table=%s&page=%s", bbsName, page);
 		try {
 			ArrayList<BbsItem> items = new ArrayList<BbsItem>();
@@ -54,4 +58,44 @@ public class BbsParserImpl implements BbsParser {
 			return null;
 		} // catch
 	} // parsePage
+
+	@Override
+	public ArticleItem parseArticle(BbsNames bbsName, long num) {
+		String url=String.format("http://www.clien.net/cs2/bbs/board.php?bo_table=%s&wr_id=%s", bbsName, num);
+		
+		try {
+			Document doc=Jsoup.parse(new URL(url), 3000);
+			Element resContents=doc.getElementById("resContents");
+			for(Element signatureEl : resContents.getElementsByClass("signature"))
+				signatureEl.remove();
+			String articleHtml=resContents.html();
+			
+			ArticleItem article=new ArticleItem(articleHtml, new ArrayList<ArticleReplyItem>());
+			
+			Element commentWrapper=doc.getElementById("comment_wrapper");
+			for(Element replyBaseEl : commentWrapper.getElementsByClass("reply_base")){
+				ArticleReplyItem replyItem=new ArticleReplyItem();
+				Element userIdFirstChildEl=replyBaseEl.getElementsByTag("user_id").first().child(0);
+				if(userIdFirstChildEl.tagName().equals("img")) {
+					replyItem.setImgNickPath(userIdFirstChildEl.absUrl("src"));
+				} else{
+					replyItem.setNick(userIdFirstChildEl.text());
+				} //if
+				Element userIdSecondChildEl=replyBaseEl.getElementsByTag("user_id").first().child(1);
+				replyItem.setDate(dateFormat2.parse(userIdSecondChildEl.text()).getTime());
+				if(replyBaseEl.attr("style").contains("30"))
+					replyItem.setReReply(true);
+				
+				article.getReplys().add(replyItem);
+			} //for replyBaseEl
+			
+			return article;
+		} catch (IOException e) {
+			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
+			return null;
+		} catch (ParseException e) {
+			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
+			return null;
+		} //catch
+	}
 } // class
