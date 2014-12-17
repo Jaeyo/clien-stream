@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.TimerTask;
 import java.util.function.Predicate;
 
+import javax.jms.JMSException;
+
 import org.jaeyo.clien_stream.consts.BbsNames;
 import org.jaeyo.clien_stream.entity.ArticleItem;
 import org.jaeyo.clien_stream.entity.BbsItem;
+import org.jaeyo.clien_stream.mq.ActiveMQAdapter;
 import org.jaeyo.clien_stream.parser.BbsParser;
 import org.jaeyo.clien_stream.repo.mongodb.MongoDbAdapter;
 import org.slf4j.Logger;
@@ -46,6 +49,15 @@ public class ParseTask extends TimerTask {
 				continue;
 			updateArticle(unstoredNum, parsedArticle);
 		} //for unstoredNum
+		
+		for(BbsItem item : items){
+			String topic=String.format("topic-%s", bbsName.toString().toLowerCase()); 
+			try {
+				ActiveMQAdapter.produceMessage(topic, item);
+			} catch (JMSException e) {
+				logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
+			} //catch
+		} //for item
 	} // run
 	
 	private void insertBbsItems(ArrayList<BbsItem> items){

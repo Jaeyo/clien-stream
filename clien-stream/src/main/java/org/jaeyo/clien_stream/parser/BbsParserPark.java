@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
 
 public class BbsParserPark implements BbsParser {
 	private static final Logger logger = LoggerFactory.getLogger(BbsParserPark.class);
-	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private static SimpleDateFormat dateFormat2 = new SimpleDateFormat("(yyyy-MM-dd HH:mm)");
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private SimpleDateFormat dateFormat2 = new SimpleDateFormat("(yyyy-MM-dd HH:mm)");
 
 	@Override
 	public ArrayList<BbsItem> parseBbs(BbsNames bbsName, int page) {

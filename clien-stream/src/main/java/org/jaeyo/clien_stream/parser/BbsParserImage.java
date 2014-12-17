@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 
 public class BbsParserImage implements BbsParser {
 	private static final Logger logger = LoggerFactory.getLogger(BbsParserImage.class);
-	private static SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm");
-	private static SimpleDateFormat dateFormat2=new SimpleDateFormat("(yyyy-MM-dd HH:mm)");
+	private SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	private SimpleDateFormat dateFormat2=new SimpleDateFormat("(yyyy-MM-dd HH:mm)");
 
 	@Override
 	public ArrayList<BbsItem> parseBbs(BbsNames bbsName, int page) {
