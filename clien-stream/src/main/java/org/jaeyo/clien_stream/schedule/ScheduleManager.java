@@ -24,10 +24,17 @@ public class ScheduleManager {
 			timers.put(bbsName, timer);
 			switch(bbsName){
 			case PARK:
-				timer.schedule(new ParseTask(new BbsParserImpl(), bbsName), 5*1000, period);
+				timer.schedule(new ParseTask(new BbsParserPark(), bbsName), 5*1000, period);
+				break;
+			case IMAGE:
+				timer.schedule(new ParseTask(new BbsParserPark(), bbsName), 5*1000, period); 
+				TODO check
 				break;
 			default:
 				//TODO
+				
+//				PARK, IMAGE, KIN, NEWS, LECTURE, USE, CHEHUM, 
+//	USEFUL, JIRUM, COUPON, HONGBO, PDS, SOL
 			} //switch
 		} //for bbsName
 	} //schedule

@@ -17,7 +17,7 @@ public class BbsParserImplTest {
 
 	@Test
 	public void test() {
-		BbsParser parser=new BbsParserImpl();
+		BbsParser parser=new BbsParserPark();
 		ArrayList<BbsItem> result=parser.parseBbs("park", 1);
 		assertNotNull(result);
 		assertTrue(result.size()!=0);

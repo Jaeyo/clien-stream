@@ -12,7 +12,7 @@ import org.jaeyo.clien_stream.consts.BbsNames;
 import org.jaeyo.clien_stream.entity.ArticleItem;
 import org.jaeyo.clien_stream.entity.BbsItem;
 import org.jaeyo.clien_stream.parser.BbsParser;
-import org.jaeyo.clien_stream.parser.BbsParserImpl;
+import org.jaeyo.clien_stream.parser.BbsParserPark;
 import org.jaeyo.clien_stream.repo.mongodb.MongoDbAdapter;
 import org.jaeyo.clien_stream.schedule.ParseTask;
 import org.junit.Test;
@@ -35,7 +35,7 @@ public class HomeServiceTest {
 		coll.drop();
 
 		try{
-			BbsParser parser=new BbsParserImpl();
+			BbsParser parser=new BbsParserPark();
 			ArrayList<BbsItem> items=parser.parseBbs(BbsNames.PARK.toString().toLowerCase(), 1);
 			
 			ParseTask parseTask=new ParseTask(parser, BbsNames.PARK);

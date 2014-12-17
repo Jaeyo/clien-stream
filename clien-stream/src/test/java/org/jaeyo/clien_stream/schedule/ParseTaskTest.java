@@ -3,7 +3,6 @@ package org.jaeyo.clien_stream.schedule;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +13,7 @@ import org.jaeyo.clien_stream.consts.BbsNames;
 import org.jaeyo.clien_stream.entity.ArticleItem;
 import org.jaeyo.clien_stream.entity.ArticleReplyItem;
 import org.jaeyo.clien_stream.entity.BbsItem;
-import org.jaeyo.clien_stream.parser.BbsParserImpl;
+import org.jaeyo.clien_stream.parser.BbsParserPark;
 import org.jaeyo.clien_stream.repo.mongodb.MongoDbAdapter;
 import org.junit.Test;
 
@@ -38,7 +37,7 @@ public class ParseTaskTest {
 		coll.drop();
 
 		try{
-			ParseTask parseTask=new ParseTask(new BbsParserImpl(), BbsNames.PARK);
+			ParseTask parseTask=new ParseTask(new BbsParserPark(), BbsNames.PARK);
 
 			ArrayList<BbsItem> items=new ArrayList<BbsItem>();
 			for (int i = 0; i < 10; i++) 
@@ -64,7 +63,7 @@ public class ParseTaskTest {
 		coll.drop();
 	
 		try{
-			ParseTask parseTask=new ParseTask(new BbsParserImpl(), BbsNames.PARK);
+			ParseTask parseTask=new ParseTask(new BbsParserPark(), BbsNames.PARK);
 			
 			ArrayList<BbsItem> items=new ArrayList<BbsItem>();
 			for (int i = 0; i < 10; i++) 
@@ -88,7 +87,7 @@ public class ParseTaskTest {
 		coll.drop();
 		
 		try{
-			ParseTask parseTask=new ParseTask(new BbsParserImpl(), BbsNames.PARK);
+			ParseTask parseTask=new ParseTask(new BbsParserPark(), BbsNames.PARK);
 			
 			ArrayList<BbsItem> items=new ArrayList<BbsItem>();
 			for (int i = 0; i < 10; i++) 
