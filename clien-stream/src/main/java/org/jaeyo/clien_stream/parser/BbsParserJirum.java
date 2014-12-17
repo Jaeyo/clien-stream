@@ -58,6 +58,9 @@ public class BbsParserJirum implements BbsParser {
 			} //for trEl
 			
 			return items;
+		} catch (NumberFormatException e) {
+			logger.error(String.format("%s, errmsg : %s, bbsName : %s", e.getClass().getSimpleName(), e.getMessage(), bbsName), e);
+			return null;
 		} catch (IOException e) {
 			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
 			return null;

@@ -38,7 +38,7 @@ function Controller(){
 } //Controller
 
 function WsController(){
-	this.socket=new WebSocket("ws://${pageContext.request.serverName}:${1235}/websocket/ws/server/1235")
+	this.socket=new WebSocket("ws://${pageContext.request.serverName}:${wsPort}/websocket/ws/server/${wsPort}")
 	
 	this.socket.onopen=function(){
 		console.log("[WebSocket->onopen]");

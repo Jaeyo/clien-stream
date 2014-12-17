@@ -9,6 +9,7 @@ import org.jaeyo.clien_stream.common.ConfKey;
 import org.jaeyo.clien_stream.consts.BbsNames;
 import org.jaeyo.clien_stream.parser.BbsParserChehum;
 import org.jaeyo.clien_stream.parser.BbsParserHongbo;
+import org.jaeyo.clien_stream.parser.BbsParserImage;
 import org.jaeyo.clien_stream.parser.BbsParserJirum;
 import org.jaeyo.clien_stream.parser.BbsParserKin;
 import org.jaeyo.clien_stream.parser.BbsParserPark;
@@ -34,7 +35,7 @@ public class ScheduleManager {
 				timer.schedule(new ParseTask(new BbsParserPark(), bbsName), 5*1000, period);
 				break;
 			case IMAGE:
-				timer.schedule(new ParseTask(new BbsParserPark(), bbsName), 5*1000, period); 
+				timer.schedule(new ParseTask(new BbsParserImage(), bbsName), 5*1000, period); 
 				break;
 			case KIN:
 				timer.schedule(new ParseTask(new BbsParserKin(), bbsName), 5*1000, period); 

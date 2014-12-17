@@ -97,25 +97,69 @@ function Controller(){
 } //Controller
 
 function WsController(){
+	this.socket=new WebSocket("ws://${pageContext.request.serverName}:${wsPort}/websocket/ws/server/${wsPort}")
 	
+	this.socket.onopen=function(){
+		console.log("[WebSocket->onopen]");
+	} //onopen
+	
+	this.socket.onmessage=function(e){
+		console.log("[WebSocket->onmessage] " + e.data);
+		var item=JSON.parse(e.data);
+		view.addItem(item);
+	} //onmessage
+	
+	this.socket.onclose=function(){
+		console.log("[WebSocket->onclose]");
+	} //onclose
+	
+	this.requestMsging=function(){
+		jsonMsg=new Object();
+		jsonMsg.bbsName="${bbsName}";
+		this.waitForSocketConnection(function(){
+			wsController.socket.send(JSON.stringify(jsonMsg));
+		});
+	} //requestMsging
+	
+	this.stop=function(){
+		this.socket.close();
+	} //stop
+	
+	this.waitForSocketConnection=function(callback){
+		setTimeout(function(){
+			if(wsController.socket.readyState==WebSocket.OPEN){
+				console.log("connection is made");
+				if(callback!=null)
+					callback();
+			} else{
+				console.log("wait for connection");
+				this.waitForSocketConnection(callback);
+			} //if
+		}, 100);
+	} //waitForSocketConnection	
 } //WsController
 
 function View(){
-	this.cloneItem=function(num, date, hit, title, nick, content){
-		var item=$("#prepared_item_template").clone();
-		item.find("#item_num").html(num);
-		item.find("#item_date").html(date);
-		item.find("#item_hit").html(hit);
-		item.find("#item_title").html(title);
-		item.find("#item_nick").html(nick);
-		item.find("#item_content").html(content);
-		item.css("visibility", "visible");
-		item.insertAfter("#contents");
-	} //cloneItem
+	this.addItem=function(item){
+		var itemTemplate=$("#prepared_item_template").clone();
+		itemTemplate.find("#item_num").html(item.num);
+		itemTemplate.find("#item_date").html(item.date);
+		itemTemplate.find("#item_hit").html(item.hit);
+		itemTemplate.find("#item_title").html(item.title);
+		itemTemplate.find("#item_title").html(item.title);
+		if(item.nick==null){
+			itemTemplate.find("#item_nick").html(item.nick);
+		} else{
+			itemTemplate.find("#item_nick").html("<img src='" + item.imgNickPath + "' />'");
+		} //if
+		itemTemplate.find("#item_content").html(item.article.articleHtml);
+		
+		itemTemplate.css("visibility", "visible");
+		itemTemplate.insertAfter($("#contents")));
+	} //addItem
 } //View
 
 function Model(){
-	this.nick="${nick}";
 } //Model
 
 controller=new Controller();
