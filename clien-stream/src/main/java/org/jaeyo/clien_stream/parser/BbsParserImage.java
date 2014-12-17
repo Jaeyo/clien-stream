@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 public class BbsParserImage implements BbsParser {
 	private static final Logger logger = LoggerFactory.getLogger(BbsParserImage.class);
 	private static SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	private static SimpleDateFormat dateFormat2=new SimpleDateFormat("(yyyy-MM-dd HH:mm)");
 
 	@Override
 	public ArrayList<BbsItem> parseBbs(String bbsName, int page) {
@@ -76,9 +77,26 @@ public class BbsParserImage implements BbsParser {
 			
 			Element boardMainEl=doc.getElementsByClass("board_main").first();
 			for(Element replyBaseEl : boardMainEl.getElementsByClass("reply_base")){
-				TODO IMME
+				Element userIdEl=replyBaseEl.getElementsByClass("user_id").first();
+				String nick=null, imgNickPath=null;
+				if(userIdEl.child(0).tagName().equals("img")){
+					imgNickPath=userIdEl.child(0).absUrl("src");
+				} else{
+					nick=userIdEl.child(0).text();
+				} //if
+				long date=dateFormat2.parse(replyBaseEl.getElementsByClass("reply_info").first().child(1).text()).getTime();
+				String replyText=replyBaseEl.getElementsByTag("textarea").first().text();
+				boolean isReReply=replyBaseEl.attr("style").contains("30"); 
+				
+				ArticleReplyItem reply=new ArticleReplyItem(replyText, nick, imgNickPath, date, isReReply);
+				article.getReplys().add(reply);
 			} //for replyBaseEl
+			
+			return article;
 		} catch (IOException e) {
+			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
+			return null;
+		} catch (ParseException e) {
 			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
 			return null;
 		} //catch

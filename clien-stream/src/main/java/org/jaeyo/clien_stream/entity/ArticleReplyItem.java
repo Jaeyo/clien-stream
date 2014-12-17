@@ -14,11 +14,12 @@ public class ArticleReplyItem implements Serializable{
 	public ArticleReplyItem(){
 	}  //INIT
 	
-	public ArticleReplyItem(String replyText, String nick, String imgNickPath, long date) {
+	public ArticleReplyItem(String replyText, String nick, String imgNickPath, long date, boolean isReReply) {
 		setReplyText(replyText);
 		setNick(nick);
 		setImgNickPath(imgNickPath);
 		setDate(date);
+		setReReply(isReReply);
 	} //INIT
 
 	public ArticleReplyItem(BasicDBObject dbObj) {

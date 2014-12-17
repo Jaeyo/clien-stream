@@ -83,8 +83,7 @@ public class BbsParserPark implements BbsParser {
 				} //if
 				Element userIdSecondChildEl=replyBaseEl.getElementsByTag("user_id").first().child(1);
 				replyItem.setDate(dateFormat2.parse(userIdSecondChildEl.text()).getTime());
-				if(replyBaseEl.attr("style").contains("30"))
-					replyItem.setReReply(true);
+				replyItem.setReReply(replyBaseEl.attr("style").contains("30"));
 				
 				article.getReplys().add(replyItem);
 			} //for replyBaseEl
