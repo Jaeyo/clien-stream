@@ -54,7 +54,7 @@ public class JettyServer {
 		context.setClassLoader(Thread.currentThread().getContextClassLoader());
 		context.addServlet(mvcServletHolder, "/");
 		context.setResourceBase(Conf.getWebInfPath().getAbsolutePath()); 
-		context.setContextPath("/prechat");
+		context.setContextPath("/" + MVC_SERVLET_NAME);
 		return context;
 	} //getWebAppContext
 	

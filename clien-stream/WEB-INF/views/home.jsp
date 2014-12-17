@@ -52,10 +52,6 @@
 					</div>
 				</div>
 				
-				<div class="row">
-					<button id="testBtn">test</button>
-				</div>
-				
 				<div id="contents"></div>
 				
 				<div id="prepared_item_template" style="visibility: hidden;">
@@ -155,7 +151,7 @@ function View(){
 		itemTemplate.find("#item_content").html(item.article.articleHtml);
 		
 		itemTemplate.css("visibility", "visible");
-		itemTemplate.insertAfter($("#contents")));
+		itemTemplate.insertAfter($("#contents"));
 	} //addItem
 } //View
 
@@ -169,11 +165,7 @@ model=new Model();
 </script>
 
 <script type="text/javascript">
-var counter=0;
-$("#testBtn").click(function(){
-	counter=counter+1;
-	view.cloneItem(counter, "2014-11-11 12:23:33", "8123", "THIS IS TITLE", "nick", "this is contentntew");
-});
+wsController.requestMsging();
 </script>
 
 </body>
