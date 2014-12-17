@@ -3,7 +3,7 @@ package org.jaeyo.clien_stream;
 import org.jaeyo.clien_stream.common.Conf;
 import org.jaeyo.clien_stream.common.ConfKey;
 import org.jaeyo.clien_stream.schedule.ScheduleManager;
-import org.jaeyo.clien_stream.websocket.WebChatServer;
+import org.jaeyo.clien_stream.websocket.WebMessagingServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,7 @@ public class App {
 	
 		ScheduleManager.schedule();
 		
-		WebChatServer.startServer(Integer.parseInt(Conf.get(ConfKey.WEB_SOCKET_PORT)));
+		WebMessagingServer.startServer(Integer.parseInt(Conf.get(ConfKey.WEB_SOCKET_PORT)));
 		
 		JettyServer jetty=new JettyServer();
 		jetty.start();

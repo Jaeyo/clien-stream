@@ -1,10 +1,15 @@
 package org.jaeyo.clien_stream.entity;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+
+import org.json.JSONObject;
 
 import com.mongodb.BasicDBObject;
 
 public class ArticleReplyItem implements Serializable{
+	private static SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	private String replyText;
 	private String nick;
 	private String imgNickPath;
@@ -78,4 +83,14 @@ public class ArticleReplyItem implements Serializable{
 		dbObj.put("date", getDate());
 		return dbObj;
 	} //toDBObject
+	
+	public String toJSON(){
+		JSONObject json=new JSONObject();
+		json.put("replyText", getReplyText());
+		json.put("nick", getNick());
+		json.put("imgNickPath", getImgNickPath());
+		json.put("date", dateFormat.format(getDate()));
+		json.put("isReReply", isReReply());
+		return json.toString();
+	} //toJSON
 } // class

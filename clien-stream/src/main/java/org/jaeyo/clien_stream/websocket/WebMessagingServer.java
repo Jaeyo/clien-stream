@@ -2,41 +2,42 @@ package org.jaeyo.clien_stream.websocket;
 
 import java.net.InetSocketAddress;
 
+import org.jaeyo.clien_stream.consts.BbsNames;
+import org.jaeyo.clien_stream.entity.BbsItem;
 import org.jaeyo.clien_stream.mq.ActiveMQAdapter;
+import org.jaeyo.clien_stream.service.HomeService;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.lasti.PresentationChat.mq.ChatMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
-public class WebChatServer extends WebSocketServer {
-	private static final Logger logger = LoggerFactory.getLogger(WebChatServer.class);
-	private static Table<WebSocket, String, String> attrsPerSocket = HashBasedTable.create();
+public class WebMessagingServer extends WebSocketServer {
+	private static final Logger logger = LoggerFactory.getLogger(WebMessagingServer.class);
+	private static Table<WebSocket, String, Object> attrsPerSocket = HashBasedTable.create();
 
-	public WebChatServer(int port) {
+	public WebMessagingServer(int port) {
 		super(new InetSocketAddress(port));
 	} // INIT
 
 	@Override
-	public void onOpen(final WebSocket conn, ClientHandshake handshake) {
+	public void onOpen(WebSocket conn, ClientHandshake handshake) {
 		logger.info("open from {}", conn.getRemoteSocketAddress().getAddress().toString());
-		try {
-			ActiveMQAdapter.listen("chatMsg", new WebSocketMessageListener(conn));
-		} catch (Exception e) {
-			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
-		} // catch
 	} // onOpen
 
 	@Override
 	public void onClose(WebSocket conn, int code, String reason, boolean remote) {
 		logger.info("close from {}, code : {}, reason : {}, remote : {}", conn.getRemoteSocketAddress().getAddress().toString(), code, reason, remote);
+		try{
+			WebSocketMessageListener mqListener=(WebSocketMessageListener) attrsPerSocket.remove(conn, "mqListener");
+			ActiveMQAdapter.unlisten(mqListener);
+		} catch(Exception e){
+			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
+		} //catch
 	} // onClose
 
 	@Override
@@ -45,28 +46,15 @@ public class WebChatServer extends WebSocketServer {
 
 		try{
 			JSONObject json=new JSONObject(message);
-			String kind=json.getString("kind");
+			String bbsName=json.getString("bbsName");
+	
+			for(BbsItem item : new HomeService().selectArticles(BbsNames.valueOf(bbsName.toUpperCase()), 100))
+				conn.send(item.toJSON());
 			
-			switch(kind){
-			case "chatMsg":{
-				String msg=json.getString("msg");
-				String nick=attrsPerSocket.get(conn, "nick");
-				Preconditions.checkArgument(msg!=null);
-				Preconditions.checkArgument(nick!=null);
-				ActiveMQAdapter.produceMessage("chatMsg", new ChatMessage(nick, msg));
-				break;
-			} //chatMsg
-			case "setNick":{
-				String nick=json.getString("nick");
-				Preconditions.checkArgument(nick!=null);
-				attrsPerSocket.put(conn, "nick", nick);
-				break;
-			} //setNick
-			default:
-				logger.error("unknown kind : {}", kind);
-			} //switch
-		} catch(JSONException e){
-			logger.error(String.format("illegal json msg : %s", message), e);
+			String topic=String.format("topic-%s", bbsName);
+			WebSocketMessageListener mqListener=new WebSocketMessageListener(conn);
+			attrsPerSocket.put(conn, "mqListener", mqListener);
+			ActiveMQAdapter.listen(topic, mqListener);
 		} catch(Exception e){
 			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
 		} //catch
@@ -77,14 +65,14 @@ public class WebChatServer extends WebSocketServer {
 		logger.error(String.format("%s, errmsg : %s", ex.getClass().getSimpleName(), ex.getMessage()), ex);
 	} // onError
 
-	public static WebChatServer startServer(int port) {
-		WebChatServer server = new WebChatServer(port);
+	public static WebMessagingServer startServer(int port) {
+		WebMessagingServer server = new WebMessagingServer(port);
 		server.start();
 		logger.info("started");
 		return server;
 	} // startServer
 
-	public static void stopServer(WebChatServer server) {
+	public static void stopServer(WebMessagingServer server) {
 		logger.info("stop on port : {}", server.getPort());
 		try {
 			server.stop();

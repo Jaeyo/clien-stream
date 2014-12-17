@@ -3,6 +3,9 @@ package org.jaeyo.clien_stream.entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 
@@ -51,4 +54,16 @@ public class ArticleItem implements Serializable{
 		
 		return dbObj;
 	} //toDBObject
+	
+	public String toJSON(){
+		JSONObject json=new JSONObject();
+		json.put("articleHtml", getArticleHtml());
+		
+		JSONArray replysJson=new JSONArray();
+		for(ArticleReplyItem reply : replys){
+			replysJson.put(reply.toJSON());
+		} //for reply
+		json.put("replys", replysJson.toString());
+		return json.toString();
+	} //toJSON
 } // class

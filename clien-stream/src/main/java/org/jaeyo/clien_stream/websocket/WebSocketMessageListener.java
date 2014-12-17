@@ -5,10 +5,9 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+import org.jaeyo.clien_stream.entity.BbsItem;
 import org.jaeyo.clien_stream.mq.ActiveMQAdapter;
 import org.java_websocket.WebSocket;
-import org.json.JSONObject;
-import org.lasti.PresentationChat.mq.ChatMessage;
 
 import com.google.common.base.Preconditions;
 import com.sun.istack.internal.NotNull;
@@ -28,12 +27,9 @@ public class WebSocketMessageListener implements MessageListener {
 				ActiveMQAdapter.unlisten(this);
 				return;
 			} // if
-
-			ChatMessage chatMsg = (ChatMessage) ((ObjectMessage) message).getObject();
-			JSONObject json=new JSONObject();
-			json.put("sender", chatMsg.getSenderNickname());
-			json.put("msg", chatMsg.getMsg());
-			socket.send(json.toString());
+	
+			BbsItem bbsItem= (BbsItem) ((ObjectMessage) message).getObject();
+			socket.send(bbsItem.toJSON());
 		} catch (JMSException e) {
 			e.printStackTrace();
 		} // catch

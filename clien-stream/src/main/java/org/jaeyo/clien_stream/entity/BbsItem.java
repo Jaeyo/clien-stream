@@ -1,10 +1,15 @@
 package org.jaeyo.clien_stream.entity;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+
+import org.json.JSONObject;
 
 import com.mongodb.BasicDBObject;
 
 public class BbsItem implements Serializable{
+	private static SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	private long num;
 	private String title;
 	private String nick;
@@ -112,4 +117,17 @@ public class BbsItem implements Serializable{
 		
 		return dbObj;
 	} // toDBObject
+	
+	public String toJSON(){
+		JSONObject json=new JSONObject();
+		json.put("num", getNum());
+		json.put("title", getTitle());
+		json.put("nick", getNick());
+		json.put("imgNickPath", getImgNickPath());
+		json.put("date", dateFormat.format(getDate()));
+		json.put("hit", getHit());
+		json.put("bbsName", getBbsName());
+		json.put("article", getArticle().toJSON());
+		return json.toString();
+	} //toJSON
 } // class /
