@@ -38,7 +38,7 @@ public class BbsParserJirum implements BbsParser {
 				
 				Elements tdEls=trEl.getElementsByTag("td");
 				
-				if(tdEls.get(4).text().equals("-"))
+				if(tdEls.get(4).text().trim().equals("-"))
 					continue;
 				
 				long num = Long.parseLong(tdEls.get(0).text());
@@ -110,6 +110,9 @@ public class BbsParserJirum implements BbsParser {
 			} //while
 			
 			return article;
+		} catch (NumberFormatException e) {
+			logger.error(String.format("%s, errmsg : %s, bbsName : %s", e.getClass().getSimpleName(), e.getMessage(), bbsName), e);
+			return null;
 		} catch (IOException e) {
 			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
 			return null;

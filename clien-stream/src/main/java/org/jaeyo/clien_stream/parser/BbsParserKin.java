@@ -33,14 +33,14 @@ public class BbsParserKin implements BbsParser {
 			Elements mytrEls = doc.getElementsByClass("mytr");
 			for (Element mytrEl : mytrEls) {
 				Elements tdEls = mytrEl.getElementsByTag("td");
-				if(tdEls.get(4).text().equals("-"))
+				if(tdEls.get(4).text().trim().equals("-"))
 					continue;
 				
 				long num = Long.parseLong(tdEls.get(0).text());
 				String title = tdEls.get(2).text();
 				String imgNickPath = null;
 				String nick = null;
-				long date = dateFormat.parse(tdEls.get(4).child(0).attr("title")).getTime();
+				long date = dateFormat.parse(tdEls.get(4).getElementsByTag("span").first().attr("title")).getTime();
 				long hit = Long.parseLong(tdEls.get(5).text());
 
 				Elements imgNickEls = tdEls.get(3).getElementsByTag("img");
@@ -53,6 +53,9 @@ public class BbsParserKin implements BbsParser {
 			} // for mytrEl
 
 			return items;
+		} catch (NumberFormatException e) {
+			logger.error(String.format("%s, errmsg : %s, bbsName : %s", e.getClass().getSimpleName(), e.getMessage(), bbsName), e);
+			return null;
 		} catch (IOException e) {
 			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
 			return null;
@@ -94,6 +97,9 @@ public class BbsParserKin implements BbsParser {
 			} //for replyBaseEl
 			
 			return article;
+		} catch (NumberFormatException e) {
+			logger.error(String.format("%s, errmsg : %s, bbsName : %s", e.getClass().getSimpleName(), e.getMessage(), bbsName), e);
+			return null;
 		} catch (IOException e) {
 			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
 			return null;

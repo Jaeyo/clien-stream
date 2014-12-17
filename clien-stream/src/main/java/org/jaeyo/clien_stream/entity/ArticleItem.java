@@ -49,7 +49,7 @@ public class ArticleItem implements Serializable{
 		
 		BasicDBList replys=new BasicDBList();
 		for(ArticleReplyItem replyItem : getReplys())
-			replys.add(replyItem);
+			replys.add(replyItem.toDBObject());
 		dbObj.put("replys", replys);
 		
 		return dbObj;
