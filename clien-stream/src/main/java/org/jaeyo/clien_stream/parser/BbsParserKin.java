@@ -18,8 +18,8 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BbsParserPark implements BbsParser {
-	private static final Logger logger = LoggerFactory.getLogger(BbsParserPark.class);
+public class BbsParserKin implements BbsParser {
+	private static final Logger logger = LoggerFactory.getLogger(BbsParserKin.class);
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static SimpleDateFormat dateFormat2 = new SimpleDateFormat("(yyyy-MM-dd HH:mm)");
 
@@ -33,22 +33,21 @@ public class BbsParserPark implements BbsParser {
 			Elements mytrEls = doc.getElementsByClass("mytr");
 			for (Element mytrEl : mytrEls) {
 				Elements tdEls = mytrEl.getElementsByTag("td");
-				
-				if(tdEls.get(3).text().equals("-"))
+				if(tdEls.get(4).text().equals("-"))
 					continue;
 				
 				long num = Long.parseLong(tdEls.get(0).text());
-				String title = tdEls.get(1).text();
+				String title = tdEls.get(2).text();
 				String imgNickPath = null;
 				String nick = null;
-				long date = dateFormat.parse(tdEls.get(3).child(0).attr("title")).getTime();
-				long hit = Long.parseLong(tdEls.get(4).text());
+				long date = dateFormat.parse(tdEls.get(4).child(0).attr("title")).getTime();
+				long hit = Long.parseLong(tdEls.get(5).text());
 
-				Elements imgNickEls = tdEls.get(2).getElementsByTag("img");
+				Elements imgNickEls = tdEls.get(3).getElementsByTag("img");
 				if (imgNickEls.size() != 0)
 					imgNickPath = imgNickEls.first().absUrl("src");
 				else
-					nick = tdEls.get(2).text();
+					nick = tdEls.get(3).text();
 
 				items.add(new BbsItem(num, title, nick, imgNickPath, date, hit, bbsName.toString().toLowerCase()));
 			} // for mytrEl

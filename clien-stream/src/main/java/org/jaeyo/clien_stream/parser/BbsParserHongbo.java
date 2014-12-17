@@ -5,6 +5,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.jaeyo.clien_stream.consts.BbsNames;
@@ -18,10 +19,10 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BbsParserPark implements BbsParser {
-	private static final Logger logger = LoggerFactory.getLogger(BbsParserPark.class);
+public class BbsParserHongbo implements BbsParser {
+	private static final Logger logger = LoggerFactory.getLogger(BbsParserHongbo.class);
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private static SimpleDateFormat dateFormat2 = new SimpleDateFormat("(yyyy-MM-dd HH:mm)");
+	private static SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 	@Override
 	public ArrayList<BbsItem> parseBbs(BbsNames bbsName, int page) {
@@ -30,29 +31,32 @@ public class BbsParserPark implements BbsParser {
 			ArrayList<BbsItem> items = new ArrayList<BbsItem>();
 
 			Document doc = Jsoup.parse(new URL(url), 3000);
-			Elements mytrEls = doc.getElementsByClass("mytr");
-			for (Element mytrEl : mytrEls) {
-				Elements tdEls = mytrEl.getElementsByTag("td");
+			
+			for(Element trEl : doc.getElementsByTag("tbody").first().getElementsByTag("tr")){
+				if(trEl.attr("onmouseover").equals(""))
+					continue;
 				
-				if(tdEls.get(3).text().equals("-"))
+				Elements tdEls=trEl.getElementsByTag("td");
+				
+				if(tdEls.get(4).text().equals("-"))
 					continue;
 				
 				long num = Long.parseLong(tdEls.get(0).text());
-				String title = tdEls.get(1).text();
+				String title = tdEls.get(2).text();
 				String imgNickPath = null;
 				String nick = null;
-				long date = dateFormat.parse(tdEls.get(3).child(0).attr("title")).getTime();
-				long hit = Long.parseLong(tdEls.get(4).text());
+				long date = dateFormat.parse(tdEls.get(4).child(0).attr("title")).getTime();
+				long hit = Long.parseLong(tdEls.get(5).text());
 
-				Elements imgNickEls = tdEls.get(2).getElementsByTag("img");
+				Elements imgNickEls = tdEls.get(3).getElementsByTag("img");
 				if (imgNickEls.size() != 0)
 					imgNickPath = imgNickEls.first().absUrl("src");
 				else
-					nick = tdEls.get(2).text();
+					nick = tdEls.get(3).text();
 
 				items.add(new BbsItem(num, title, nick, imgNickPath, date, hit, bbsName.toString().toLowerCase()));
-			} // for mytrEl
-
+			} //for trEl
+			
 			return items;
 		} catch (IOException e) {
 			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
@@ -69,6 +73,17 @@ public class BbsParserPark implements BbsParser {
 		
 		try {
 			Document doc=Jsoup.parse(new URL(url), 3000);
+			
+			Element headEl=doc.getElementsByTag("head").first();
+			if(headEl.children().size()==1 && headEl.child(0).tagName().equals("script")){
+				String scriptElHtml=doc.getElementsByTag("script").first().html();
+				int startIndex=scriptElHtml.indexOf("location.replace('")+"location.replace('".length();
+				int endIndex=scriptElHtml.indexOf("');");
+				String newUrlStr=scriptElHtml.substring(startIndex, endIndex);
+				URL newUrl=new URL(new URL(url), newUrlStr);
+				doc=Jsoup.parse(newUrl, 3000);	
+			} //if
+			
 			Element resContents=doc.getElementById("resContents");
 			
 			for(Element signatureEl : resContents.getElementsByClass("signature"))
@@ -78,21 +93,31 @@ public class BbsParserPark implements BbsParser {
 			
 			ArticleItem article=new ArticleItem(articleHtml, new ArrayList<ArticleReplyItem>());
 			
-			Element commentWrapper=doc.getElementById("comment_wrapper");
-			for(Element replyBaseEl : commentWrapper.getElementsByClass("reply_base")){
-				ArticleReplyItem replyItem=new ArticleReplyItem();
-				Element userIdFirstChildEl=replyBaseEl.getElementsByClass("user_id").first().child(0);
-				if(userIdFirstChildEl.tagName().equals("img")) {
-					replyItem.setImgNickPath(userIdFirstChildEl.absUrl("src"));
-				} else{
-					replyItem.setNick(userIdFirstChildEl.text());
-				} //if
-				Element dateEl=replyBaseEl.getElementsByClass("reply_info").first().child(1);
-				replyItem.setDate(dateFormat2.parse(dateEl.text()).getTime());
-				replyItem.setReReply(replyBaseEl.attr("style").contains("30"));
+			Element boardMainEl=doc.getElementsByClass("board_main").first();
+			Iterator<Element> replyHeadElIter=boardMainEl.getElementsByClass("reply_head").iterator();
+			Iterator<Element> replyContentElIter=boardMainEl.getElementsByClass("reply_content").iterator();
+			Iterator<Element> textareaElIter=boardMainEl.getElementsByTag("textarea").iterator();
+			
+			while(replyHeadElIter.hasNext() && replyContentElIter.hasNext() && textareaElIter.hasNext()){
+				Element replyHeadEl=replyHeadElIter.next();
+				Element replyContentEl=replyContentElIter.next();
+				Element textareaEl=textareaElIter.next();
 				
-				article.getReplys().add(replyItem);
-			} //for replyBaseEl
+				String replyText=textareaEl.text();
+				String nick=null, imgNickPath=null;
+				Element userIdEl=replyHeadEl.getElementsByClass("user_id").first();
+				if(userIdEl.child(0).tagName().equals("img")){
+					imgNickPath=userIdEl.child(0).absUrl("src");
+				} else{
+					nick=userIdEl.child(0).text();
+				} //if
+				String dateStr=replyHeadEl.child(0).child(1).text();
+				dateStr=dateStr.substring(dateStr.indexOf(", ")+", ".length(), dateStr.length()-1);
+				long date=dateFormat2.parse(dateStr).getTime();
+				boolean isReReply=false;
+				
+				article.getReplys().add(new ArticleReplyItem(replyText, nick, imgNickPath, date, isReReply));
+			} //while
 			
 			return article;
 		} catch (IOException e) {

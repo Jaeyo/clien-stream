@@ -7,10 +7,16 @@ import java.util.Timer;
 import org.jaeyo.clien_stream.common.Conf;
 import org.jaeyo.clien_stream.common.ConfKey;
 import org.jaeyo.clien_stream.consts.BbsNames;
-import org.jaeyo.clien_stream.parser.BbsParserImpl;
+import org.jaeyo.clien_stream.parser.BbsParserChehum;
+import org.jaeyo.clien_stream.parser.BbsParserHongbo;
+import org.jaeyo.clien_stream.parser.BbsParserJirum;
+import org.jaeyo.clien_stream.parser.BbsParserKin;
 import org.jaeyo.clien_stream.parser.BbsParserPark;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ScheduleManager {
+	private static final Logger logger=LoggerFactory.getLogger(ScheduleManager.class);
 	private static boolean isScheduled=false;
 	private static Map<BbsNames, Timer> timers=new HashMap<BbsNames, Timer>();
 	
@@ -29,13 +35,39 @@ public class ScheduleManager {
 				break;
 			case IMAGE:
 				timer.schedule(new ParseTask(new BbsParserPark(), bbsName), 5*1000, period); 
-				TODO check
 				break;
+			case KIN:
+				timer.schedule(new ParseTask(new BbsParserKin(), bbsName), 5*1000, period); 
+				break;
+			case NEWS:
+				timer.schedule(new ParseTask(new BbsParserPark(), bbsName), 5*1000, period); 
+				break;
+			case LECTURE:
+				timer.schedule(new ParseTask(new BbsParserKin(), bbsName), 5*1000, period); 
+				break;
+			case USE:
+				timer.schedule(new ParseTask(new BbsParserKin(), bbsName), 5*1000, period); 
+				break;
+			case CHEHUM:
+				timer.schedule(new ParseTask(new BbsParserChehum(), bbsName), 5*1000, period); 
+				break;
+			case USEFUL:
+				timer.schedule(new ParseTask(new BbsParserPark(), bbsName), 5*1000, period); 
+				break;
+			case JIRUM:
+				timer.schedule(new ParseTask(new BbsParserJirum(), bbsName), 5*1000, period); 
+				break;
+			case COUPON:
+				timer.schedule(new ParseTask(new BbsParserJirum(), bbsName), 5*1000, period);
+				break;
+			case HONGBO:
+				timer.schedule(new ParseTask(new BbsParserHongbo(), bbsName), 5*1000, period); 
+				break;
+			case PDS:
+			case SOLD:
+				continue; //not supported
 			default:
-				//TODO
-				
-//				PARK, IMAGE, KIN, NEWS, LECTURE, USE, CHEHUM, 
-//	USEFUL, JIRUM, COUPON, HONGBO, PDS, SOL
+				logger.error("unknown bbsName : {}", bbsName.toString());
 			} //switch
 		} //for bbsName
 	} //schedule

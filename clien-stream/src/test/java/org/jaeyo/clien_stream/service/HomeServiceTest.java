@@ -36,7 +36,7 @@ public class HomeServiceTest {
 
 		try{
 			BbsParser parser=new BbsParserPark();
-			ArrayList<BbsItem> items=parser.parseBbs(BbsNames.PARK.toString().toLowerCase(), 1);
+			ArrayList<BbsItem> items=parser.parseBbs(BbsNames.PARK, 1);
 			
 			ParseTask parseTask=new ParseTask(parser, BbsNames.PARK);
 			ReflectionUtil.invokePrivateMethod(parseTask, ParseTask.class, "insertBbsItems", void.class, items);
@@ -56,10 +56,6 @@ public class HomeServiceTest {
 			HomeService homeService=new HomeService();
 			List<BbsItem> result=homeService.selectArticles(BbsNames.PARK, 3);
 			assertTrue(result.size()==3);
-			
-			for (BbsItem item : result){
-				System.out.println(item.getTitle());
-			} //for item
 		} finally{
 			coll.drop();
 		} //finally
