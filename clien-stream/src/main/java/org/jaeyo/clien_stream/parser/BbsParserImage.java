@@ -23,7 +23,7 @@ public class BbsParserImage implements BbsParser {
 	private static SimpleDateFormat dateFormat2=new SimpleDateFormat("(yyyy-MM-dd HH:mm)");
 
 	@Override
-	public ArrayList<BbsItem> parseBbs(String bbsName, int page) {
+	public ArrayList<BbsItem> parseBbs(BbsNames bbsName, int page) {
 		String url=String.format("http://www.clien.net/cs2/bbs/board.php?bo_table=%s&page=%s", bbsName.toString().toLowerCase(), page);
 	
 		ArrayList<BbsItem> items=new ArrayList<BbsItem>();
@@ -36,7 +36,7 @@ public class BbsParserImage implements BbsParser {
 				Element viewHeadEl=viewHeadElsIter.next();
 				Element viewTitleEl=viewTitleElsIter.next();
 				
-				Element userInfoEl=viewHeadEl.getElementsByClass("user_info").first().child(0).child(0);
+				Element userInfoEl=viewHeadEl.getElementsByClass("user_info").first().child(0);
 				String nick=null, imgNickPath=null;
 				if(userInfoEl.tagName().equals("img"))
 					imgNickPath=userInfoEl.absUrl("src");
@@ -49,7 +49,7 @@ public class BbsParserImage implements BbsParser {
 				String title=viewTitleEl.text();
 				String linkWithNum=viewTitleEl.getElementsByTag("a").first().attr("href");
 				long num=Long.parseLong(linkWithNum.substring(linkWithNum.indexOf("wr_id=")+"wr_id=".length(), linkWithNum.indexOf("&page=")));
-				items.add(new BbsItem(num, title, nick, imgNickPath, date, hit, bbsName));
+				items.add(new BbsItem(num, title, nick, imgNickPath, date, hit, bbsName.toString().toLowerCase()));
 			} //while
 			
 			return items;
@@ -64,7 +64,7 @@ public class BbsParserImage implements BbsParser {
 
 	@Override
 	public ArticleItem parseArticle(BbsNames bbsName, long num) {
-		String url=String.format("http://www.clien.net/cs2/bbs/board.php?bo_table=%s&wr_id=%s", bbsName, num);
+		String url=String.format("http://www.clien.net/cs2/bbs/board.php?bo_table=%s&wr_id=%s", bbsName.toString().toLowerCase(), num);
 		
 		try {
 			Document doc=Jsoup.parse(new URL(url), 3000);

@@ -28,9 +28,10 @@ public class ParseTask extends TimerTask {
 		this.parser = parser;
 		this.bbsName = bbsName;
 	} // INIT
+	
 	@Override
 	public void run() {
-		ArrayList<BbsItem> items= parser.parseBbs(bbsName.toString().toLowerCase(), 1);
+		ArrayList<BbsItem> items= parser.parseBbs(bbsName, 1);
 		
 		if(items==null || items.size()==0){
 			logger.warn("parse bbs ({}), but return nothing", bbsName);

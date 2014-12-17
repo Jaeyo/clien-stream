@@ -24,8 +24,8 @@ public class BbsParserPark implements BbsParser {
 	private static SimpleDateFormat dateFormat2 = new SimpleDateFormat("(yyyy-MM-dd HH:mm)");
 
 	@Override
-	public ArrayList<BbsItem> parseBbs(String bbsName, int page) {
-		String url = String.format("http://www.clien.net/cs2/bbs/board.php?bo_table=%s&page=%s", bbsName, page);
+	public ArrayList<BbsItem> parseBbs(BbsNames bbsName, int page) {
+		String url = String.format("http://www.clien.net/cs2/bbs/board.php?bo_table=%s&page=%s", bbsName.toString().toLowerCase(), page);
 		try {
 			ArrayList<BbsItem> items = new ArrayList<BbsItem>();
 
@@ -46,7 +46,7 @@ public class BbsParserPark implements BbsParser {
 				else
 					nick = tdEls.get(2).text();
 
-				items.add(new BbsItem(num, title, nick, imgNickPath, date, hit, bbsName));
+				items.add(new BbsItem(num, title, nick, imgNickPath, date, hit, bbsName.toString().toLowerCase()));
 			} // for mytrEl
 
 			return items;
@@ -61,13 +61,15 @@ public class BbsParserPark implements BbsParser {
 
 	@Override
 	public ArticleItem parseArticle(BbsNames bbsName, long num) {
-		String url=String.format("http://www.clien.net/cs2/bbs/board.php?bo_table=%s&wr_id=%s", bbsName, num);
+		String url=String.format("http://www.clien.net/cs2/bbs/board.php?bo_table=%s&wr_id=%s", bbsName.toString().toLowerCase(), num);
 		
 		try {
 			Document doc=Jsoup.parse(new URL(url), 3000);
 			Element resContents=doc.getElementById("resContents");
+			
 			for(Element signatureEl : resContents.getElementsByClass("signature"))
 				signatureEl.remove();
+			
 			String articleHtml=resContents.html();
 			
 			ArticleItem article=new ArticleItem(articleHtml, new ArrayList<ArticleReplyItem>());
@@ -75,14 +77,14 @@ public class BbsParserPark implements BbsParser {
 			Element commentWrapper=doc.getElementById("comment_wrapper");
 			for(Element replyBaseEl : commentWrapper.getElementsByClass("reply_base")){
 				ArticleReplyItem replyItem=new ArticleReplyItem();
-				Element userIdFirstChildEl=replyBaseEl.getElementsByTag("user_id").first().child(0);
+				Element userIdFirstChildEl=replyBaseEl.getElementsByClass("user_id").first().child(0);
 				if(userIdFirstChildEl.tagName().equals("img")) {
 					replyItem.setImgNickPath(userIdFirstChildEl.absUrl("src"));
 				} else{
 					replyItem.setNick(userIdFirstChildEl.text());
 				} //if
-				Element userIdSecondChildEl=replyBaseEl.getElementsByTag("user_id").first().child(1);
-				replyItem.setDate(dateFormat2.parse(userIdSecondChildEl.text()).getTime());
+				Element dateEl=replyBaseEl.getElementsByClass("reply_info").first().child(1);
+				replyItem.setDate(dateFormat2.parse(dateEl.text()).getTime());
 				replyItem.setReReply(replyBaseEl.attr("style").contains("30"));
 				
 				article.getReplys().add(replyItem);

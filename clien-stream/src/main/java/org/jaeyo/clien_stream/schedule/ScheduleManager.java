@@ -8,6 +8,7 @@ import org.jaeyo.clien_stream.common.Conf;
 import org.jaeyo.clien_stream.common.ConfKey;
 import org.jaeyo.clien_stream.consts.BbsNames;
 import org.jaeyo.clien_stream.parser.BbsParserImpl;
+import org.jaeyo.clien_stream.parser.BbsParserPark;
 
 public class ScheduleManager {
 	private static boolean isScheduled=false;

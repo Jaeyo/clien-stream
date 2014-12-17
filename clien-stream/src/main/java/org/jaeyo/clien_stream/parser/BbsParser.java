@@ -7,6 +7,6 @@ import org.jaeyo.clien_stream.entity.ArticleItem;
 import org.jaeyo.clien_stream.entity.BbsItem;
 
 public interface BbsParser {
-	public ArrayList<BbsItem> parseBbs(String bbsName, int page);
+	public ArrayList<BbsItem> parseBbs(BbsNames bbsName, int page);
 	public ArticleItem parseArticle(BbsNames bbsName, long num);
 } //interface
