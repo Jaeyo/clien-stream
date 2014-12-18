@@ -101,7 +101,8 @@ function WsController(){
 	
 	this.socket.onmessage=function(e){
 		console.log("[WebSocket->onmessage] ");
-		var item=JSON.parse(e.data);
+		//var item=JSON.parse(e.data);
+		var item=e.data;
 		view.addItem(item);
 	} //onmessage
 	
@@ -137,18 +138,23 @@ function WsController(){
 
 function View(){
 	this.addItem=function(item){
+		var jsonItem=JSON.parse(item);
 		var itemTemplate=$("#prepared_item_template").clone();
-		itemTemplate.find("#item_num").html(item.num);
-		itemTemplate.find("#item_date").html(item.date);
-		itemTemplate.find("#item_hit").html(item.hit);
-		itemTemplate.find("#item_title").html(item.title);
-		itemTemplate.find("#item_title").html(item.title);
-		if(item.nick==null){
-			itemTemplate.find("#item_nick").html(item.nick);
+		itemTemplate.find("#item_num").html(jsonItem.num);
+		itemTemplate.find("#item_date").html(jsonItem.date);
+		itemTemplate.find("#item_hit").html(jsonItem.hit);
+		itemTemplate.find("#item_title").html(jsonItem.title);
+		if(jsonItem.nick==null){
+			itemTemplate.find("#item_nick").html(jsonItem.nick);
 		} else{
-			itemTemplate.find("#item_nick").html("<img src='" + item.imgNickPath + "' />'");
+			itemTemplate.find("#item_nick").html("<img src='" + jsonItem.imgNickPath + "' />'");
 		} //if
-		itemTemplate.find("#item_content").html(item.article.articleHtml);
+	
+		console.log(jsonItem.article);
+		var jsonArticle=JSON.parse(jsonItem.article);
+		console.log(jsonArticle);
+		itemTemplate.find("#item_content").html(jsonArticle.articleHtml);
+		console.log(jsonArticle.articleHtml);
 		
 		itemTemplate.css("visibility", "visible");
 		itemTemplate.insertAfter($("#contents"));
