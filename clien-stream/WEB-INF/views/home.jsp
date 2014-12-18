@@ -163,6 +163,7 @@ function View(){
 } //View
 
 function Model(){
+	this.preparedItems=[];  //TODO
 } //Model
 
 controller=new Controller();
