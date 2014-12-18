@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import com.mongodb.BulkWriteOperation;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -48,16 +49,20 @@ public class ParseTask extends TimerTask {
 			if(parsedArticle==null)
 				continue;
 			updateArticle(unstoredNum, parsedArticle);
+
+			for(BbsItem item : items){
+				try{
+					if(item.getNum()==unstoredNum){
+						item.setArticle(parsedArticle);
+						String topic=String.format("topic-%s", bbsName.toString().toLowerCase()); 
+						ActiveMQAdapter.produceMessage(topic, item);
+						break;
+					} //if
+				} catch(JMSException e){
+					logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
+				} //catch
+			} //for i
 		} //for unstoredNum
-		
-		for(BbsItem item : items){
-			String topic=String.format("topic-%s", bbsName.toString().toLowerCase()); 
-			try {
-				ActiveMQAdapter.produceMessage(topic, item);
-			} catch (JMSException e) {
-				logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
-			} //catch
-		} //for item
 	} // run
 	
 	private void insertBbsItems(ArrayList<BbsItem> items){
@@ -81,10 +86,13 @@ public class ParseTask extends TimerTask {
 			} //test
 		});
 	
-		List<DBObject> inserts=new ArrayList<DBObject>();
+		BulkWriteOperation bulk=coll.initializeUnorderedBulkOperation();
+		if(items==null || items.size()==0)
+			return;
+		
 		for(BbsItem item : items)
-			inserts.add(item.toDBObject());
-		coll.insert(inserts);
+			bulk.insert(item.toDBObject());
+		bulk.execute();
 	} //insertBbsItem
 	
 	private List<Long> findUnstoredArticle(){

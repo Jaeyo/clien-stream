@@ -100,7 +100,7 @@ function WsController(){
 	} //onopen
 	
 	this.socket.onmessage=function(e){
-		console.log("[WebSocket->onmessage] " + e.data);
+		console.log("[WebSocket->onmessage] ");
 		var item=JSON.parse(e.data);
 		view.addItem(item);
 	} //onmessage
@@ -152,6 +152,7 @@ function View(){
 		
 		itemTemplate.css("visibility", "visible");
 		itemTemplate.insertAfter($("#contents"));
+		itemTemplate.fadeIn("slow");
 	} //addItem
 } //View
 

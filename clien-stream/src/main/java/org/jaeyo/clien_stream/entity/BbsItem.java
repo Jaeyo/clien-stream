@@ -127,7 +127,9 @@ public class BbsItem implements Serializable{
 		json.put("date", dateFormat.format(getDate()));
 		json.put("hit", getHit());
 		json.put("bbsName", getBbsName());
-		json.put("article", getArticle().toJSON());
+		
+		if(getArticle()!=null)
+			json.put("article", getArticle().toJSON());
 		return json.toString();
 	} //toJSON
 } // class /
