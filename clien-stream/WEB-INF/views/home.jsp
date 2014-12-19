@@ -177,7 +177,6 @@ function View(){
 	
 	this.viewArticle=function(bbsName, num, title){
 		var url= "http://www.clien.net/cs2/bbs/board.php?bo_table=" + bbsName + "&wr_id=" + num;
-		$("#articleView").attr("title", title);
 		$("#articleView").show();
 		var objectNode=$("<object />").attr("data", url).attr("width", 780+150).attr("height", 580+170).attr("id", "articleNode").attr("style", "position:relative; left:-150px; top:-170px");
 		var embedNode=$("<embed />").attr("data", url).attr("width", 780).attr("height", 580);
@@ -186,6 +185,7 @@ function View(){
 			close: function(event, ui){
 				view.closeArticle();
 			},
+			title: title,
 			resizable: false,
 			height: 600, 
 			width: 800,
