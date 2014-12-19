@@ -18,7 +18,7 @@ public class BbsParserHongboTest {
 		assertNotNull(items);
 		assertTrue(items.size()!=0);
 		
-		for(BbsItem item : items)
-			assertNotNull(parser.parseArticle(BbsNames.HONGBO, item.getNum()));
+//		for(BbsItem item : items)
+//			assertNotNull(parser.parseArticle(BbsNames.HONGBO, item.getNum()));
 	} //test_hongbo
 } //class

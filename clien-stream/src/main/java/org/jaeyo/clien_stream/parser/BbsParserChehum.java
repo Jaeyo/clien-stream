@@ -61,64 +61,58 @@ public class BbsParserChehum implements BbsParser {
 		} catch (NumberFormatException e) {
 			logger.error(String.format("%s, errmsg : %s, bbsName : %s", e.getClass().getSimpleName(), e.getMessage(), bbsName), e);
 			return null;
-		} catch (IOException e) {
-			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
-			return null;
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
 			return null;
 		} // catch
 	} // parsePage
 
-	@Override
-	public ArticleItem parseArticle(BbsNames bbsName, long num) {
-		String url=String.format("http://www.clien.net/cs2/bbs/board.php?bo_table=%s&wr_id=%s", bbsName.toString().toLowerCase(), num);
-		
-		try {
-			Document doc=Jsoup.parse(new URL(url), 3000);
-			Element resContents=doc.getElementById("resContents");
-			
-			for(Element signatureEl : resContents.getElementsByClass("signature"))
-				signatureEl.remove();
-			
-			String articleHtml=resContents.html();
-			
-			ArticleItem article=new ArticleItem(articleHtml, new ArrayList<ArticleReplyItem>());
-			
-			Element boardMainEl=doc.getElementsByClass("board_main").first();
-			Iterator<Element> replyHeadElIter=boardMainEl.getElementsByClass("reply_head").iterator();
-			Iterator<Element> replyContentElIter=boardMainEl.getElementsByClass("reply_content").iterator();
-			Iterator<Element> textareaElIter=boardMainEl.getElementsByTag("textarea").iterator();
-			
-			while(replyHeadElIter.hasNext() && replyContentElIter.hasNext() && textareaElIter.hasNext()){
-				Element replyHeadEl=replyHeadElIter.next();
-				Element replyContentEl=replyContentElIter.next();
-				Element textareaEl=textareaElIter.next();
-				
-				String replyText=textareaEl.text();
-				String nick=null, imgNickPath=null;
-				Element userIdEl=replyHeadEl.getElementsByClass("user_id").first();
-				if(userIdEl.child(0).tagName().equals("img")){
-					imgNickPath=userIdEl.child(0).absUrl("src");
-				} else{
-					nick=userIdEl.child(0).text();
-				} //if
-				long date=dateFormat2.parse(replyHeadEl.child(0).child(1).text()).getTime();
-				boolean isReReply=false;
-				
-				article.getReplys().add(new ArticleReplyItem(replyText, nick, imgNickPath, date, isReReply));
-			} //while
-			
-			return article;
-		} catch (NumberFormatException e) {
-			logger.error(String.format("%s, errmsg : %s, bbsName : %s", e.getClass().getSimpleName(), e.getMessage(), bbsName), e);
-			return null;
-		} catch (IOException e) {
-			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
-			return null;
-		} catch (ParseException e) {
-			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
-			return null;
-		} //catch
-	}
+//	@Override
+//	public ArticleItem parseArticle(BbsNames bbsName, long num) {
+//		String url=String.format("http://www.clien.net/cs2/bbs/board.php?bo_table=%s&wr_id=%s", bbsName.toString().toLowerCase(), num);
+//		
+//		try {
+//			Document doc=Jsoup.parse(new URL(url), 3000);
+//			Element resContents=doc.getElementById("resContents");
+//			
+//			for(Element signatureEl : resContents.getElementsByClass("signature"))
+//				signatureEl.remove();
+//			
+//			String articleHtml=resContents.html();
+//			
+//			ArticleItem article=new ArticleItem(articleHtml, new ArrayList<ArticleReplyItem>());
+//			
+//			Element boardMainEl=doc.getElementsByClass("board_main").first();
+//			Iterator<Element> replyHeadElIter=boardMainEl.getElementsByClass("reply_head").iterator();
+//			Iterator<Element> replyContentElIter=boardMainEl.getElementsByClass("reply_content").iterator();
+//			Iterator<Element> textareaElIter=boardMainEl.getElementsByTag("textarea").iterator();
+//			
+//			while(replyHeadElIter.hasNext() && replyContentElIter.hasNext() && textareaElIter.hasNext()){
+//				Element replyHeadEl=replyHeadElIter.next();
+//				Element replyContentEl=replyContentElIter.next();
+//				Element textareaEl=textareaElIter.next();
+//				
+//				String replyText=textareaEl.text();
+//				String nick=null, imgNickPath=null;
+//				Element userIdEl=replyHeadEl.getElementsByClass("user_id").first();
+//				if(userIdEl.child(0).tagName().equals("img")){
+//					imgNickPath=userIdEl.child(0).absUrl("src");
+//				} else{
+//					nick=userIdEl.child(0).text();
+//				} //if
+//				long date=dateFormat2.parse(replyHeadEl.child(0).child(1).text()).getTime();
+//				boolean isReReply=false;
+//				
+//				article.getReplys().add(new ArticleReplyItem(replyText, nick, imgNickPath, date, isReReply));
+//			} //while
+//			
+//			return article;
+//		} catch (NumberFormatException e) {
+//			logger.error(String.format("%s, errmsg : %s, bbsName : %s", e.getClass().getSimpleName(), e.getMessage(), bbsName), e);
+//			return null;
+//		} catch (Exception e) {
+//			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
+//			return null;
+//		} //catch
+//	}
 } // class

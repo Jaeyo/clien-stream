@@ -17,7 +17,7 @@ public class BbsParserImageTest {
 		assertNotNull(items);
 		assertTrue(items.size()!=0);
 		
-		for(BbsItem item : items)
-			assertNotNull(parser.parseArticle(BbsNames.IMAGE, item.getNum()));
+//		for(BbsItem item : items)
+//			assertNotNull(parser.parseArticle(BbsNames.IMAGE, item.getNum()));
 	} //test
 } //class

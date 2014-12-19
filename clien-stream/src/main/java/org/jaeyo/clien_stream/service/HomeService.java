@@ -27,6 +27,9 @@ public class HomeService {
 		String collectionName=String.format("bbsItem_%s", bbsName);
 		DBCollection coll=MongoDbAdapter.getInstance().getCollection(collectionName);
 		
+		if(coll.count() < limit)
+			limit=(int) coll.count();
+		
 		List<BbsItem> retList=new ArrayList<BbsItem>();
 		String whereQuery=String.format("{$query : { article : { $ne : null}, num : { $gt : %s} }, $orderby : {num : 1} }", startNum);
 		for(DBObject bbsItemObj: coll.find((DBObject)JSON.parse(whereQuery)).limit(limit))

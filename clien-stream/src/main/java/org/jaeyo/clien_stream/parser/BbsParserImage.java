@@ -56,55 +56,49 @@ public class BbsParserImage implements BbsParser {
 		} catch (NumberFormatException e) {
 			logger.error(String.format("%s, errmsg : %s, bbsName : %s", e.getClass().getSimpleName(), e.getMessage(), bbsName), e);
 			return null;
-		} catch (IOException e) {
-			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
-			return null;
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
 			return null;
 		} //catch
 	} // parseBbs
 
-	@Override
-	public ArticleItem parseArticle(BbsNames bbsName, long num) {
-		String url=String.format("http://www.clien.net/cs2/bbs/board.php?bo_table=%s&wr_id=%s", bbsName.toString().toLowerCase(), num);
-		
-		try {
-			Document doc=Jsoup.parse(new URL(url), 3000);
-			Element resContents=doc.getElementById("resContents");
-			for(Element signatureEl : resContents.getElementsByClass("signature"))
-				signatureEl.remove();
-			String articleHtml=resContents.html();
-			
-			ArticleItem article=new ArticleItem(articleHtml, new ArrayList<ArticleReplyItem>());
-			
-			Element boardMainEl=doc.getElementsByClass("board_main").first();
-			for(Element replyBaseEl : boardMainEl.getElementsByClass("reply_base")){
-				Element userIdEl=replyBaseEl.getElementsByClass("user_id").first();
-				String nick=null, imgNickPath=null;
-				if(userIdEl.child(0).tagName().equals("img")){
-					imgNickPath=userIdEl.child(0).absUrl("src");
-				} else{
-					nick=userIdEl.child(0).text();
-				} //if
-				long date=dateFormat2.parse(replyBaseEl.getElementsByClass("reply_info").first().child(1).text()).getTime();
-				String replyText=replyBaseEl.getElementsByTag("textarea").first().text();
-				boolean isReReply=replyBaseEl.attr("style").contains("30"); 
-				
-				ArticleReplyItem reply=new ArticleReplyItem(replyText, nick, imgNickPath, date, isReReply);
-				article.getReplys().add(reply);
-			} //for replyBaseEl
-			
-			return article;
-		} catch (NumberFormatException e) {
-			logger.error(String.format("%s, errmsg : %s, bbsName : %s", e.getClass().getSimpleName(), e.getMessage(), bbsName), e);
-			return null;
-		} catch (IOException e) {
-			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
-			return null;
-		} catch (ParseException e) {
-			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
-			return null;
-		} //catch
-	} // parseArticle
+//	@Override
+//	public ArticleItem parseArticle(BbsNames bbsName, long num) {
+//		String url=String.format("http://www.clien.net/cs2/bbs/board.php?bo_table=%s&wr_id=%s", bbsName.toString().toLowerCase(), num);
+//		
+//		try {
+//			Document doc=Jsoup.parse(new URL(url), 3000);
+//			Element resContents=doc.getElementById("resContents");
+//			for(Element signatureEl : resContents.getElementsByClass("signature"))
+//				signatureEl.remove();
+//			String articleHtml=resContents.html();
+//			
+//			ArticleItem article=new ArticleItem(articleHtml, new ArrayList<ArticleReplyItem>());
+//			
+//			Element boardMainEl=doc.getElementsByClass("board_main").first();
+//			for(Element replyBaseEl : boardMainEl.getElementsByClass("reply_base")){
+//				Element userIdEl=replyBaseEl.getElementsByClass("user_id").first();
+//				String nick=null, imgNickPath=null;
+//				if(userIdEl.child(0).tagName().equals("img")){
+//					imgNickPath=userIdEl.child(0).absUrl("src");
+//				} else{
+//					nick=userIdEl.child(0).text();
+//				} //if
+//				long date=dateFormat2.parse(replyBaseEl.getElementsByClass("reply_info").first().child(1).text()).getTime();
+//				String replyText=replyBaseEl.getElementsByTag("textarea").first().text();
+//				boolean isReReply=replyBaseEl.attr("style").contains("30"); 
+//				
+//				ArticleReplyItem reply=new ArticleReplyItem(replyText, nick, imgNickPath, date, isReReply);
+//				article.getReplys().add(reply);
+//			} //for replyBaseEl
+//			
+//			return article;
+//		} catch (NumberFormatException e) {
+//			logger.error(String.format("%s, errmsg : %s, bbsName : %s", e.getClass().getSimpleName(), e.getMessage(), bbsName), e);
+//			return null;
+//		} catch (Exception e) {
+//			logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
+//			return null;
+//		} //catch
+//	} // parseArticle
 } // class

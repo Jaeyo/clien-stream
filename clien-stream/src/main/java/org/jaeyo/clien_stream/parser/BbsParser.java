@@ -8,5 +8,5 @@ import org.jaeyo.clien_stream.entity.BbsItem;
 
 public interface BbsParser {
 	public ArrayList<BbsItem> parseBbs(BbsNames bbsName, int page);
-	public ArticleItem parseArticle(BbsNames bbsName, long num);
+//	public ArticleItem parseArticle(BbsNames bbsName, long num);
 } //interface

@@ -23,8 +23,8 @@ public class BbsParserParkTest {
 		assertNotNull(items);
 		assertTrue(items.size()!=0);
 		
-		for(BbsItem item : items)
-			assertNotNull(parser.parseArticle(BbsNames.PARK, item.getNum()));
+//		for(BbsItem item : items)
+//			assertNotNull(parser.parseArticle(BbsNames.PARK, item.getNum()));
 	} //test_park
 	
 	@Test
@@ -34,8 +34,8 @@ public class BbsParserParkTest {
 		assertNotNull(items);
 		assertTrue(items.size()!=0);
 		
-		for(BbsItem item : items)
-			assertNotNull(parser.parseArticle(BbsNames.PARK, item.getNum()));
+//		for(BbsItem item : items)
+//			assertNotNull(parser.parseArticle(BbsNames.PARK, item.getNum()));
 	} //test_news
 	
 	@Test
@@ -45,7 +45,7 @@ public class BbsParserParkTest {
 		assertNotNull(items);
 		assertTrue(items.size()!=0);
 		
-		for(BbsItem item : items)
-			assertNotNull(parser.parseArticle(BbsNames.USEFUL, item.getNum()));
+//		for(BbsItem item : items)
+//			assertNotNull(parser.parseArticle(BbsNames.USEFUL, item.getNum()));
 	} //test_useful
 } //class

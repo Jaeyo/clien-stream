@@ -17,7 +17,7 @@ public class BbsItem implements Serializable{
 	private long date;
 	private long hit;
 	private String bbsName;
-	private ArticleItem article;
+//	private ArticleItem article;
 
 	public BbsItem(BasicDBObject dbObj) {
 		setNum(dbObj.getLong("num"));
@@ -26,8 +26,8 @@ public class BbsItem implements Serializable{
 		setDate(dbObj.getLong("date"));
 		setHit(dbObj.getLong("hit"));
 		setBbsName(dbObj.getString("bbsName"));
-		if(dbObj.get("article")!=null)
-			setArticle(new ArticleItem((BasicDBObject) dbObj.get("article")));
+//		if(dbObj.get("article")!=null)
+//			setArticle(new ArticleItem((BasicDBObject) dbObj.get("article")));
 	} // INIT
 
 	public BbsItem(long num, String title, String nick, String imgNickPath, long date, long hit, String bbsName) {
@@ -95,13 +95,13 @@ public class BbsItem implements Serializable{
 		this.bbsName = bbsName;
 	}
 
-	public ArticleItem getArticle() {
-		return article;
-	}
-
-	public void setArticle(ArticleItem article) {
-		this.article = article;
-	}
+//	public ArticleItem getArticle() {
+//		return article;
+//	}
+//
+//	public void setArticle(ArticleItem article) {
+//		this.article = article;
+//	}
 
 	public BasicDBObject toDBObject() {
 		BasicDBObject dbObj = new BasicDBObject();
@@ -112,8 +112,8 @@ public class BbsItem implements Serializable{
 		dbObj.put("hit", getHit());
 		dbObj.put("bbsName", getBbsName());
 		
-		if(getArticle()!=null)
-			dbObj.put("article", getArticle().toDBObject());
+//		if(getArticle()!=null)
+//			dbObj.put("article", getArticle().toDBObject());
 		
 		return dbObj;
 	} // toDBObject
@@ -128,8 +128,8 @@ public class BbsItem implements Serializable{
 		json.put("hit", getHit());
 		json.put("bbsName", getBbsName());
 		
-		if(getArticle()!=null)
-			json.put("article", getArticle().toJSON());
+//		if(getArticle()!=null)
+//			json.put("article", getArticle().toJSON());
 		return json.toString();
 	} //toJSON
 } // class /

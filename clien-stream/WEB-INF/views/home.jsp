@@ -121,6 +121,7 @@ function WsController(){
 	} //onclose
 	
 	this.requestMsging=function(){
+		console.log("request msging");
 		jsonMsg=new Object();
 		jsonMsg.bbsName="${bbsName}";
 		this.waitForSocketConnection(function(){

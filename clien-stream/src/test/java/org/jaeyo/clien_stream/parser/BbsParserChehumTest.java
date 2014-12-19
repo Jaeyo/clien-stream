@@ -17,7 +17,7 @@ public class BbsParserChehumTest {
 		assertNotNull(items);
 		assertTrue(items.size()!=0);
 		
-		for(BbsItem item : items)
-			assertNotNull(parser.parseArticle(BbsNames.CHEHUM, item.getNum()));
+//		for(BbsItem item : items)
+//			assertNotNull(parser.parseArticle(BbsNames.CHEHUM, item.getNum()));
 	} //test_chehum
 } //class

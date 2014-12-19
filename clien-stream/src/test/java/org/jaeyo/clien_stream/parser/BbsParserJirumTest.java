@@ -18,8 +18,8 @@ public class BbsParserJirumTest {
 		assertNotNull(items);
 		assertTrue(items.size()!=0);
 		
-		for(BbsItem item : items)
-			assertNotNull(parser.parseArticle(BbsNames.JIRUM, item.getNum()));
+//		for(BbsItem item : items)
+//			assertNotNull(parser.parseArticle(BbsNames.JIRUM, item.getNum()));
 	} //test_jirum
 	
 	@Test
@@ -29,7 +29,7 @@ public class BbsParserJirumTest {
 		assertNotNull(items);
 		assertTrue(items.size()!=0);
 		
-		for(BbsItem item : items)
-			assertNotNull(parser.parseArticle(BbsNames.COUPON, item.getNum()));
+//		for(BbsItem item : items)
+//			assertNotNull(parser.parseArticle(BbsNames.COUPON, item.getNum()));
 	} //test_coupon
 } //class
