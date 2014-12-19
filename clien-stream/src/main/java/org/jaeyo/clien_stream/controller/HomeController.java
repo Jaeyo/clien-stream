@@ -32,7 +32,7 @@ public class HomeController {
 		return home(request, BbsNames.PARK.toString().toLowerCase());
 	} //home
 	
-	@RequestMapping(value="/home/${bbsName}", method=RequestMethod.GET)
+	@RequestMapping(value="/home/{bbsName}", method=RequestMethod.GET)
 	public ModelAndView home(HttpServletRequest request, @PathVariable(value="bbsName") String bbsName){
 		ModelAndView mv=new ModelAndView("home");
 		mv.addObject("wsPort", Conf.get(ConfKey.WEB_SOCKET_PORT));

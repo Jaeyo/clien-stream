@@ -17,6 +17,8 @@
 <link href="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/css/bootstrap.min.css" rel="stylesheet">
 <link href="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/css/simple-sidebar.css" rel="stylesheet">
 
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+
 </head>
 <body>
 
@@ -58,6 +60,7 @@
 				
 				<div id="contents"></div>
 				
+				<!-- prepared item template -->
 				<div id="prepared_item_template" style="display:none;">
 					<div class="row">
 						<div id="item_num" class="col-lg-1"><!-- num --></div>
@@ -73,8 +76,21 @@
 						<div class="col-lg-8"></div>
 					</div>
 					<hr>
-					<!-- reply area -->
 				</div>
+				<!-- prepared item template -->
+				
+				<!-- article view -->
+				<!-- div id="articleView" style="position:absolute; top:20px; left:20px; border:1px solid black; padding:5px; z-index=100; background:white; display:none;" -->
+				<div id="articleView" style="display:none;">
+					<!--
+					<object id="articleViewObject" data="" width="600" height="400">
+						<embed id="articleViewEmbed" src="" width="600" height="400">
+						</embed>
+					</object>
+					  -->
+				</div>
+				<!-- article view -->
+				
 			</div>
 		</div>
 		<!-- //page content -->
@@ -83,6 +99,7 @@
 
 <script src="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/js/jquery.js"></script>
 <script src="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/js/bootstrap.min.js"></script>
+<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 <script type="text/javascript">
 var controller;
 var wsController;
@@ -163,6 +180,31 @@ function View(){
 	this.refreshPreparedCount=function(){
 		$("#preparedItemCount").html(model.preparedItems.length);
 	} //setPreparedCount
+	
+	this.viewArticle=function(bbsName, num){
+		var url= "http://www.clien.net/cs2/bbs/board.php?bo_table=" + bbsName + "&wr_id=" + num;
+		//$("#articleViewObject").attr("src", url);
+		//$("#articleViewEmbed").attr("src", url);
+		$("#articleView").attr("title", num);
+		$("#articleView").show();
+		//var iframe=$("<iframe />").attr("src", url).attr("height", "480").attr("width", "480").attr("id", "articleIframe");
+		var objectNode=$("<object />").attr("data", url).attr("width", 480+150).attr("height", 480+170).attr("id", "articleNode").css("style", "position:relative; left:-150px; top:-170px");
+		var embedNode=$("<embed />").attr("data", url).attr("width", "480").attr("height", "480");
+		objectNode.append(embedNode);
+		$("#articleView").append(objectNode).dialog({
+			close: function(event, ui){
+				view.closeArticle();
+			},
+			resizable: false,
+			height: 500, 
+			width: 500
+			});
+	} //viewArticle
+	
+	this.closeArticle=function(){
+		$("#articleView").hide();
+		$("#articleView").html("");
+	} //closeArticle
 } //View
 
 function Model(){
