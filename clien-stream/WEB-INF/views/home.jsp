@@ -188,7 +188,7 @@ function View(){
 		$("#articleView").attr("title", num);
 		$("#articleView").show();
 		//var iframe=$("<iframe />").attr("src", url).attr("height", "480").attr("width", "480").attr("id", "articleIframe");
-		var objectNode=$("<object />").attr("data", url).attr("width", 480+150).attr("height", 480+170).attr("id", "articleNode").css("style", "position:relative; left:-150px; top:-170px");
+		var objectNode=$("<object />").attr("data", url).attr("width", 480+150).attr("height", 480+170).attr("id", "articleNode").attr("style", "position:relative; left:-150px; top:-170px");
 		var embedNode=$("<embed />").attr("data", url).attr("width", "480").attr("height", "480");
 		objectNode.append(embedNode);
 		$("#articleView").append(objectNode).dialog({
@@ -197,7 +197,10 @@ function View(){
 			},
 			resizable: false,
 			height: 500, 
-			width: 500
+			width: 500,
+			open: function(event, ui){
+				$("#articleView").css("overflow", "hidden");
+			}
 			});
 	} //viewArticle
 	
