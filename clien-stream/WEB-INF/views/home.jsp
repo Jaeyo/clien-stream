@@ -52,9 +52,13 @@
 					</div>
 				</div>
 				
+				<div id="preparedItemCount" onclick="javascript:view.showPreparedItems()"></div>
+				
+				<hr>
+				
 				<div id="contents"></div>
 				
-				<div id="prepared_item_template" style="visibility: hidden;">
+				<div id="prepared_item_template" style="display:none;">
 					<div class="row">
 						<div id="item_num" class="col-lg-1"><!-- num --></div>
 						<div id="item_date" class="col-lg-3"><!-- date --></div>
@@ -67,9 +71,6 @@
 					<div class="row">
 						<div id="item_nick" class="col-lg-4"><h6><!-- nick --></h6></div>
 						<div class="col-lg-8"></div>
-					</div>
-					<div class="row">
-						<div id="item_content" class="col-lg-12"><!-- content --></div>
 					</div>
 					<hr>
 					<!-- reply area -->
@@ -101,9 +102,8 @@ function WsController(){
 	
 	this.socket.onmessage=function(e){
 		console.log("[WebSocket->onmessage] ");
-		//var item=JSON.parse(e.data);
 		var item=e.data;
-		view.addItem(item);
+		model.storeItem(item);
 	} //onmessage
 	
 	this.socket.onclose=function(){
@@ -138,6 +138,37 @@ function WsController(){
 
 function View(){
 	this.addItem=function(item){
+		item.insertAfter($("#contents"));
+		item.show("300");
+	} //addItem
+	
+	this.showPreparedItems=function(){
+		if(model.preparedItems.length==0)
+			return;
+		
+		var itemCount=model.preparedItems.length;
+		var tmpItemArr=[];
+		for(i=0; i<itemCount; i++){
+			tmpItemArr.push(model.preparedItems.pop());
+		} //for i
+		
+		itemCount=tmpItemArr.length;
+		for(i=0; i<itemCount; i++){
+			view.addItem(tmpItemArr.pop());
+		} //for i
+		
+		view.refreshPreparedCount();
+	} //showPreparedItems
+	
+	this.refreshPreparedCount=function(){
+		$("#preparedItemCount").html(model.preparedItems.length);
+	} //setPreparedCount
+} //View
+
+function Model(){
+	this.preparedItems=[];  
+	
+	this.storeItem=function(item){
 		var jsonItem=JSON.parse(item);
 		var itemTemplate=$("#prepared_item_template").clone();
 		itemTemplate.find("#item_num").html(jsonItem.num);
@@ -149,21 +180,12 @@ function View(){
 		} else{
 			itemTemplate.find("#item_nick").html("<img src='" + jsonItem.imgNickPath + "' />'");
 		} //if
-	
-		console.log(jsonItem.article);
-		var jsonArticle=JSON.parse(jsonItem.article);
-		console.log(jsonArticle);
-		itemTemplate.find("#item_content").html(jsonArticle.articleHtml);
-		console.log(jsonArticle.articleHtml);
 		
-		itemTemplate.css("visibility", "visible");
-		itemTemplate.insertAfter($("#contents"));
-		itemTemplate.fadeIn("slow");
-	} //addItem
-} //View
-
-function Model(){
-	this.preparedItems=[];  //TODO
+		itemTemplate.hide();
+		this.preparedItems.push(itemTemplate);
+		
+		view.refreshPreparedCount();
+	} //storeItem
 } //Model
 
 controller=new Controller();
