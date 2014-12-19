@@ -54,7 +54,7 @@
 					</div>
 				</div>
 				
-				<div id="preparedItemCount" onclick="javascript:view.showPreparedItems()"></div>
+				<input type="button" class="form-control" value="새로운 글이 0건 있습니다." id="preparedItemCount" onclick="javascript:view.showPreparedItems()" />
 				
 				<hr>
 				
@@ -80,14 +80,7 @@
 				<!-- prepared item template -->
 				
 				<!-- article view -->
-				<!-- div id="articleView" style="position:absolute; top:20px; left:20px; border:1px solid black; padding:5px; z-index=100; background:white; display:none;" -->
 				<div id="articleView" style="display:none;">
-					<!--
-					<object id="articleViewObject" data="" width="600" height="400">
-						<embed id="articleViewEmbed" src="" width="600" height="400">
-						</embed>
-					</object>
-					  -->
 				</div>
 				<!-- article view -->
 				
@@ -178,26 +171,23 @@ function View(){
 	} //showPreparedItems
 	
 	this.refreshPreparedCount=function(){
-		$("#preparedItemCount").html(model.preparedItems.length);
+		$("#preparedItemCount").attr("value", "새로운 글이 " + model.preparedItems.length + "건 있습니다.");
 	} //setPreparedCount
 	
-	this.viewArticle=function(bbsName, num){
+	this.viewArticle=function(bbsName, num, title){
 		var url= "http://www.clien.net/cs2/bbs/board.php?bo_table=" + bbsName + "&wr_id=" + num;
-		//$("#articleViewObject").attr("src", url);
-		//$("#articleViewEmbed").attr("src", url);
-		$("#articleView").attr("title", num);
+		$("#articleView").attr("title", title);
 		$("#articleView").show();
-		//var iframe=$("<iframe />").attr("src", url).attr("height", "480").attr("width", "480").attr("id", "articleIframe");
-		var objectNode=$("<object />").attr("data", url).attr("width", 480+150).attr("height", 480+170).attr("id", "articleNode").attr("style", "position:relative; left:-150px; top:-170px");
-		var embedNode=$("<embed />").attr("data", url).attr("width", "480").attr("height", "480");
+		var objectNode=$("<object />").attr("data", url).attr("width", 780+150).attr("height", 580+170).attr("id", "articleNode").attr("style", "position:relative; left:-150px; top:-170px");
+		var embedNode=$("<embed />").attr("data", url).attr("width", 780).attr("height", 580);
 		objectNode.append(embedNode);
 		$("#articleView").append(objectNode).dialog({
 			close: function(event, ui){
 				view.closeArticle();
 			},
 			resizable: false,
-			height: 500, 
-			width: 500,
+			height: 600, 
+			width: 800,
 			open: function(event, ui){
 				$("#articleView").css("overflow", "hidden");
 			}
@@ -219,7 +209,7 @@ function Model(){
 		itemTemplate.find("#item_num").html(jsonItem.num);
 		itemTemplate.find("#item_date").html(jsonItem.date);
 		itemTemplate.find("#item_hit").html(jsonItem.hit);
-		itemTemplate.find("#item_title").html(jsonItem.title);
+		itemTemplate.find("#item_title").html(jsonItem.title).click(function(){ view.viewArticle(jsonItem.bbsName, jsonItem.num, jsonItem.title); });
 		if(jsonItem.nick==null){
 			itemTemplate.find("#item_nick").html(jsonItem.nick);
 		} else{
