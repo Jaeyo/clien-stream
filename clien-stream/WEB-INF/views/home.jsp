@@ -61,21 +61,14 @@
 				<div id="contents"></div>
 				
 				<!-- prepared item template -->
-				<div id="prepared_item_template" style="display:none;">
+				<div id="prepared_item_template" class="bbsItem" style="display:none; margin:0; padding:0;">
 					<div class="row">
 						<div id="item_num" class="col-lg-1"><!-- num --></div>
-						<div id="item_date" class="col-lg-3"><!-- date --></div>
-						<div id="item_hit" class="col-lg-1"><!-- hit --></div>
-						<div class="col-lg-7"></div>
+						<div id="item_title" class="col-lg-8"><h2><!-- title --></h2></div>
+						<div id="item_nick" class="col-lg-2"><h6><!-- nick --></h6></div>
+						<div id="item_date" class="col-lg-1"><!-- date --></div>
 					</div>
-					<div class="row">
-						<div id="item_title" class="col-lg-12"><h2><!-- title --></h2></div>
-					</div>
-					<div class="row">
-						<div id="item_nick" class="col-lg-4"><h6><!-- nick --></h6></div>
-						<div class="col-lg-8"></div>
-					</div>
-					<hr>
+					<hr style="margin:0; padding:0">
 				</div>
 				<!-- prepared item template -->
 				
@@ -169,10 +162,30 @@ function View(){
 		} //for i
 		
 		view.refreshPreparedCount();
+		//view.removeOldItem(); //TODO
 	} //showPreparedItems
 	
+	this.removeOldItem=function(){
+		var itemArr=$("div.bbsItem");
+		var maxCount=10;//DEBUG
+		if(itemArr.length<maxCount) 
+			return;
+		
+		var removeCount=itemArr.length-maxCount;
+		for(i=0; i<removeCount; i++){
+			$(itemArr[itemArr.length-1]).remove();
+			itemArr.splice(itemArr.length-1, 1);
+		} //for i
+	} //removeOldItem
+	
 	this.refreshPreparedCount=function(){
-		$("#preparedItemCount").attr("value", "새로운 글이 " + model.preparedItems.length + "건 있습니다.");
+		var count=model.preparedItems.length;
+		$("#preparedItemCount").attr("value", "새로운 글이 " + count+ "건 있습니다.");
+		if(count!=0){
+			$("#preparedItemCount").css("background-color", "rgb(55,66,155)").css("color", "white");
+		} else{
+			$("#preparedItemCount").css("background-color", "white").css("color", "");
+		} //if
 	} //setPreparedCount
 	
 	this.viewArticle=function(bbsName, num, title){
@@ -203,20 +216,21 @@ function View(){
 
 function Model(){
 	this.preparedItems=[];  
-	this.lastJsonItem;
 	
 	this.storeItem=function(item){
 		var jsonItem=JSON.parse(item);
-		model.lastJsonItem=jsonItem; //DEBUG
 		var itemTemplate=$("#prepared_item_template").clone();
-		itemTemplate.find("#item_num").html(jsonItem.num);
-		itemTemplate.find("#item_date").html(jsonItem.date);
-		itemTemplate.find("#item_hit").html(jsonItem.hit);
-		itemTemplate.find("#item_title").html(jsonItem.title).click(function(){ view.viewArticle(jsonItem.bbsName, jsonItem.num, jsonItem.title); });
+		itemTemplate.attr("id", "num_" + jsonItem.num);
+		itemTemplate.find("#item_num").html("<small>"+jsonItem.num+"</small>");
+		itemTemplate.find("#item_date").html("<small>" + jsonItem.date+"</small>");
+		itemTemplate.find("#item_title").html("<strong>"+jsonItem.title+"</strong>");
+		itemTemplate.click(function(){ 
+			view.viewArticle(jsonItem.bbsName, jsonItem.num, jsonItem.title); 
+			itemTemplate.css("background-color", "rgb(230, 230, 230)"); 
+			});
 		if(jsonItem.nick==null){
 			itemTemplate.find("#item_nick").html("<img src='" + jsonItem.imgNickPath + "' />'");
 		} else{
-			console.log("!!!!!!!!!!!!!!!!!!!!!"); //DEBUG
 			itemTemplate.find("#item_nick").html(jsonItem.nick);
 		} //if
 		

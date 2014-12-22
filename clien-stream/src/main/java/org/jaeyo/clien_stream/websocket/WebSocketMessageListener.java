@@ -8,11 +8,14 @@ import javax.jms.ObjectMessage;
 import org.jaeyo.clien_stream.entity.BbsItem;
 import org.jaeyo.clien_stream.mq.ActiveMQAdapter;
 import org.java_websocket.WebSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.sun.istack.internal.NotNull;
 
 public class WebSocketMessageListener implements MessageListener {
+	private static final Logger logger=LoggerFactory.getLogger(WebSocketMessageListener.class);
 	private WebSocket socket;
 
 	public WebSocketMessageListener(@NotNull WebSocket socket) throws NullPointerException {

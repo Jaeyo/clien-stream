@@ -22,6 +22,7 @@ public class BbsItem implements Serializable{
 	public BbsItem(BasicDBObject dbObj) {
 		setNum(dbObj.getLong("num"));
 		setTitle(dbObj.getString("title"));
+		setNick(dbObj.getString("nick"));
 		setImgNickPath(dbObj.getString("imgNickPath"));
 		setDate(dbObj.getLong("date"));
 		setHit(dbObj.getLong("hit"));
@@ -33,6 +34,7 @@ public class BbsItem implements Serializable{
 	public BbsItem(long num, String title, String nick, String imgNickPath, long date, long hit, String bbsName) {
 		setNum(num);
 		setTitle(title);
+		setNick(nick);
 		setImgNickPath(imgNickPath);
 		setDate(date);
 		setHit(hit);

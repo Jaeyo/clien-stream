@@ -36,7 +36,7 @@ public class BbsParserChehum implements BbsParser {
 					continue;
 				
 				long num = Long.parseLong(tdEls.get(0).text());
-				String title = tdEls.get(1).text();
+				String title = tdEls.get(1).child(0).text();
 				String imgNickPath = null;
 				String nick = null;
 				long date = dateFormat.parse(tdEls.get(3).child(0).attr("title")).getTime();

@@ -1,15 +1,10 @@
 package org.jaeyo.clien_stream.parser;
 
-import java.io.IOException;
 import java.net.URL;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.jaeyo.clien_stream.consts.BbsNames;
-import org.jaeyo.clien_stream.entity.ArticleItem;
-import org.jaeyo.clien_stream.entity.ArticleReplyItem;
 import org.jaeyo.clien_stream.entity.BbsItem;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -38,7 +33,7 @@ public class BbsParserPark implements BbsParser {
 					continue;
 				
 				long num = Long.parseLong(tdEls.get(0).text());
-				String title = tdEls.get(1).text();
+				String title = tdEls.get(1).child(0).text();
 				String imgNickPath = null;
 				String nick = null;
 				String dateStr=tdEls.get(3).getElementsByTag("span").first().attr("title");
@@ -48,8 +43,9 @@ public class BbsParserPark implements BbsParser {
 				Elements imgNickEls = tdEls.get(2).getElementsByTag("img");
 				if (imgNickEls.size() != 0)
 					imgNickPath = imgNickEls.first().absUrl("src");
-				else
+				else{
 					nick = tdEls.get(2).text();
+				} //if
 
 				items.add(new BbsItem(num, title, nick, imgNickPath, date, hit, bbsName.toString().toLowerCase()));
 			} // for mytrEl

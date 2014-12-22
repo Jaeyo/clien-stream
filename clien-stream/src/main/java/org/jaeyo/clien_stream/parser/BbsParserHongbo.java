@@ -42,7 +42,7 @@ public class BbsParserHongbo implements BbsParser {
 					continue;
 				
 				long num = Long.parseLong(tdEls.get(0).text());
-				String title = tdEls.get(2).text();
+				String title = tdEls.get(2).child(0).text();
 				String imgNickPath = null;
 				String nick = null;
 				long date = dateFormat.parse(tdEls.get(4).child(0).attr("title")).getTime();

@@ -1,15 +1,10 @@
 package org.jaeyo.clien_stream.parser;
 
-import java.io.IOException;
 import java.net.URL;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.jaeyo.clien_stream.consts.BbsNames;
-import org.jaeyo.clien_stream.entity.ArticleItem;
-import org.jaeyo.clien_stream.entity.ArticleReplyItem;
 import org.jaeyo.clien_stream.entity.BbsItem;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -37,7 +32,7 @@ public class BbsParserKin implements BbsParser {
 					continue;
 				
 				long num = Long.parseLong(tdEls.get(0).text());
-				String title = tdEls.get(2).text();
+				String title = tdEls.get(2).child(0).text();
 				String imgNickPath = null;
 				String nick = null;
 				long date = dateFormat.parse(tdEls.get(4).getElementsByTag("span").first().attr("title")).getTime();
