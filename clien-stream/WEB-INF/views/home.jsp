@@ -92,27 +92,7 @@
 				
 				<div id="contents"></div>
 				
-				<!-- prepared item template -->
-				<div id="prepared_item_template" style="display:none; margin:0; padding:0;">
-					<div class="row">
-						<div id="item_num" class="col-lg-1"><!-- num --></div>
-						<div id="item_title" class="col-lg-7"><h2><!-- title --></h2></div>
-						<div id="item_nick" class="col-lg-2"><h6><!-- nick --></h6></div>
-						<div id="item_date" class="col-lg-1"><!-- date --></div>
-						<div id="item_option" class="col-lg-1">
-							<a href="#" class="delete_item">[-]</a>
-							<a href="#" class="fix_item">[+]</a>
-						</div>
-					</div>
-					<hr style="margin:0; padding:0">
-				</div>
-				<!-- prepared item template -->
-				
-				<!-- article view -->
-				<div id="articleView" style="display:none;">
-				</div>
-				<!-- article view -->
-				
+				<div id="articleView"></div>
 			</div>
 		</div>
 		<!-- //page content -->
@@ -122,6 +102,7 @@
 <script src="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/js/jquery.js"></script>
 <script src="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/js/bootstrap.min.js"></script>
 <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+<script src="<c:url value="/resource/js/home.js" /> "></script>
 <script type="text/javascript">
 var controller;
 var wsController;
@@ -170,7 +151,7 @@ function WsController(){
 					callback();
 			} else{
 				console.log("wait for connection");
-				this.waitForSocketConnection(callback);
+				wsController.waitForSocketConnection(callback);
 			} //if
 		}, 100);
 	} //waitForSocketConnection	
@@ -222,77 +203,42 @@ function View(){
 	
 	this.refreshPreparedCount=function(){
 		var count=model.preparedItems.length;
-		$("#preparedItemCount").attr("value", "새로운 글이 " + count+ "건 있습니다.");
+		var preparedItemCountNode=$("#preparedItemCount");
+		preparedItemCountNode.attr("value", "새로운 글이 " + count+ "건 있습니다.");
 		if(count!=0){
-			$("#preparedItemCount").css("background-color", "rgb(55,66,155)").css("color", "white");
+			preparedItemCountNode.css("background-color", model.clienBlue).css("color", "white");
 		} else{
-			$("#preparedItemCount").css("background-color", "white").css("color", "");
+			preparedItemCountNode.css("background-color", "white").css("color", model.clienBlue);
 		} //if
 	} //setPreparedCount
 	
 	this.viewArticle=function(bbsName, num, title){
 		var url= "http://www.clien.net/cs2/bbs/board.php?bo_table=" + bbsName + "&wr_id=" + num;
-		$("#articleView").show();
-		var objectNode=$("<object />").attr("data", url).attr("width", 780+150).attr("height", 580+170).attr("id", "articleNode").attr("style", "position:relative; left:-150px; top:-170px");
-		var embedNode=$("<embed />").attr("data", url).attr("width", 780).attr("height", 580);
-		objectNode.append(embedNode);
-		$("#articleView").append(objectNode).dialog({
+		var articleView=$("#articleView").html("");
+		articleView.show(100).append(commonUtil.getObjectEmbedNode(url, 780, 580)).dialog({
 			close: function(event, ui){
-				view.closeArticle();
+				articleView.hide().html("");
 			},
 			title: title,
 			resizable: false,
 			height: 600, 
 			width: 800,
 			open: function(event, ui){
-				$("#articleView").css("overflow", "hidden");
-			}
-			});
+				articleView.css("overflow", "hidden");
+			} //open
+		});
 	} //viewArticle
-	
-	this.closeArticle=function(){
-		$("#articleView").hide();
-		$("#articleView").html("");
-	} //closeArticle
 } //View
 
 
 
 function Model(){
-	this.preparedItems=[];  
+	this.preparedItems=[];
+	this.clienBlue="rgb(55, 66, 155)";
 	
-	this.storeItem=function(item){
-		var jsonItem=JSON.parse(item);
-		var itemTemplate=$("#prepared_item_template").clone();
-		itemTemplate.attr("class", "bbsItem");
-		itemTemplate.attr("id", "num_" + jsonItem.num);
-		itemTemplate.find("#item_num").html("<small>"+jsonItem.num+"</small>");
-		itemTemplate.find("#item_date").html("<small>" + jsonItem.date+"</small>");
-		itemTemplate.find("#item_title").html("<strong>"+jsonItem.title+"</strong>");
-		if(jsonItem.nick==null){
-			itemTemplate.find("#item_nick").html("<img src='" + jsonItem.imgNickPath + "' />'");
-		} else{
-			itemTemplate.find("#item_nick").html(jsonItem.nick);
-		} //if
-		
-		itemTemplate.click(function(){ 
-			view.viewArticle(jsonItem.bbsName, jsonItem.num, jsonItem.title); 
-			itemTemplate.css("background-color", "rgb(230, 230, 230)"); 
-		});
-		
-		itemTemplate.find("#item_option").find("a.delete_item").click(function(){
-			$("#num_" + jsonItem.num).remove();
-			return false;
-		});
-		
-		itemTemplate.find("#item_option").find("a.fix_item").click(function(){
-			view.fixItem($("#num_" + jsonItem.num));
-			return false;
-		});
-		
-		itemTemplate.hide();
-		this.preparedItems.push(itemTemplate);
-		
+	this.storeItem=function(itemStr){
+		var parsedBbsItem=parser.parseBbsItem(itemStr, view);
+		model.preparedItems.push(parsedBbsItem);
 		view.refreshPreparedCount();
 	} //storeItem
 } //Model
@@ -304,6 +250,7 @@ model=new Model();
 </script>
 
 <script type="text/javascript">
+$("#preparedItemCount").css("color", model.clienBlue);
 wsController.requestMsging();
 </script>
 
