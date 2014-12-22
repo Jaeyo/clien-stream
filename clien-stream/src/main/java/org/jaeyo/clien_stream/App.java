@@ -15,7 +15,8 @@ public class App {
 		
 		Conf.set(ConfKey.PORT, "1234");
 		Conf.set(ConfKey.WEB_SOCKET_PORT, "1235");
-		Conf.set(ConfKey.MONGODB_IP, "180.231.38.153");
+		Conf.set(ConfKey.MONGODB_IP, "127.0.0.1");
+//		Conf.set(ConfKey.MONGODB_IP, "180.231.38.153");
 		Conf.set(ConfKey.MONGODB_PORT, "27017");
 		Conf.set(ConfKey.MONGODB_DBNAME, "clienstream");
 	

@@ -203,18 +203,21 @@ function View(){
 
 function Model(){
 	this.preparedItems=[];  
+	this.lastJsonItem;
 	
 	this.storeItem=function(item){
 		var jsonItem=JSON.parse(item);
+		model.lastJsonItem=jsonItem; //DEBUG
 		var itemTemplate=$("#prepared_item_template").clone();
 		itemTemplate.find("#item_num").html(jsonItem.num);
 		itemTemplate.find("#item_date").html(jsonItem.date);
 		itemTemplate.find("#item_hit").html(jsonItem.hit);
 		itemTemplate.find("#item_title").html(jsonItem.title).click(function(){ view.viewArticle(jsonItem.bbsName, jsonItem.num, jsonItem.title); });
 		if(jsonItem.nick==null){
-			itemTemplate.find("#item_nick").html(jsonItem.nick);
-		} else{
 			itemTemplate.find("#item_nick").html("<img src='" + jsonItem.imgNickPath + "' />'");
+		} else{
+			console.log("!!!!!!!!!!!!!!!!!!!!!"); //DEBUG
+			itemTemplate.find("#item_nick").html(jsonItem.nick);
 		} //if
 		
 		itemTemplate.hide();

@@ -107,6 +107,7 @@ public class BbsItem implements Serializable{
 		BasicDBObject dbObj = new BasicDBObject();
 		dbObj.put("num", getNum());
 		dbObj.put("title", getTitle());
+		dbObj.put("nick", getNick());
 		dbObj.put("imgNickPath", getImgNickPath());
 		dbObj.put("date", getDate());
 		dbObj.put("hit", getHit());
