@@ -36,27 +36,23 @@ function BbsParser(){
 		rowDiv.find("a.delete_item").click(function(){
 			retDiv.remove();
 			
-			var fixArr=objectStorage.getDOM("fixArr");
-			if(fixArr!=null){
-				var index=fixArr.indexOf(retDiv);
-				if(index!=-1){
-					fixArr.splice(index, 1);
-					objectStorage.setDOM("fixArr", fixArr);
-				} //if
+			var fixedContents=objectStorage.getDOM("fixedContents");
+			if(fixedContents!=null){
+				fixedContents.find("num_" + jsonItem.num).remove();
+				objectStorage.setDOM("fixedContents", fixedContents);
 			} //if
 			
 			return false;
 		});
 		
 		rowDiv.find("a.fix_item").click(function(){
-			view.fixItem(retDiv);
+			var fixedContents=objectStorage.getDOM("fixedContents");
+			if(fixedContents==null)
+				fixedContents=$("<div />").attr("id", "fixed_contents");
+			fixedContents.append(retDiv);
+			objectStorage.setDOM("fixedContents", fixedContents);
 			
-			var fixArr=objectStorage.getDOM("fixArr");
-			if(fixArr==null){
-				fixArr=[];
-			} //if
-			fixArr.push(retDiv);
-			objectStorage.setDOM("fixArr", fixArr);
+			view.showFixedItems();
 			
 			return false;
 		});

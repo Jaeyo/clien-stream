@@ -103,8 +103,8 @@
 <script src="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/js/jquery.js"></script>
 <script src="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/js/bootstrap.min.js"></script>
 <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
-<script src="<c:url value="/resource/js/common.js?ver=6" /> "></script>
-<script src="<c:url value="/resource/js/home.js?ver=3" /> "></script>
+<script src="<c:url value="/resource/js/common.js?ver=10" /> "></script>
+<script src="<c:url value="/resource/js/home.js?ver=5" /> "></script>
 <script type="text/javascript">
 var controller;
 var wsController;
@@ -112,7 +112,6 @@ var view;
 var model;
 
 function Controller(){
-	
 } //Controller
 
 function WsController(){
@@ -163,13 +162,17 @@ function WsController(){
 
 function View(){
 	this.addItem=function(item){
+		item.click(function(e){
+			//TODO IMME
+		});
 		item.insertAfter($("#contents")).show("300");
 		item.show("300");
 	} //addItem
 	
-	this.fixItem=function(item){
-		item.hide().insertAfter($("#fixed_contents")).show(300);
-	} //fixItem
+	this.showFixedItems=function(){
+		var fixedContents=objectStorage.getDOM("fixedContents");
+		$("#fixed_contents").html(fixedContents.html());
+	} //showFixedItems
 	
 	this.showPreparedItems=function(){
 		if(model.preparedItems.length==0)
@@ -256,12 +259,9 @@ $("#preparedItemCount").css("color", model.clienBlue);
 
 wsController.requestMsging();
 
-var fixArr=objectStorage.getDOM("fixArr");
-if(fixArr!=null){
-	for(i=0; i<fixArr.length; i++){
-		view.fixItem(fixArr[i]);
-	} //for i
-} //if
+var fixedContents=objectStorage.getDOM("fixedContents");
+if(fixedContents!=null)
+	$("#fixed_contents").html(fixedContents.html());
 </script>
 
 </body>

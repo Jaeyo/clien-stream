@@ -25,9 +25,8 @@ function ObjectStorage(){
 		var strDOM=localStorage[key];
 		if(strDOM==null)
 			return null;
-		console.log("strDOM : "); //DEBUG
-		console.log(strDOM);
-		return $(strDOM);
+		var dom=$(strDOM);
+		return dom;
 	} //getDOM
 } //function ObjectStorage
 
