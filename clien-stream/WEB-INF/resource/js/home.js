@@ -35,11 +35,29 @@ function Parser(){
 		
 		rowDiv.find("a.delete_item").click(function(){
 			retDiv.remove();
+			
+			var fixArr=window.localStorage["fixArr"]; TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+			if(fixArr!=null){
+				var index=fixArr.indexOf(retDiv);
+				if(index!=-1){
+					fixArr.splice(index, 1);
+					window.localStorage["fixArr"]=fixArr;
+				} //if
+			} //if
+			
 			return false;
 		});
 		
 		rowDiv.find("a.fix_item").click(function(){
 			view.fixItem(retDiv);
+			
+			var fixArr=window.localStorage["fixArr"];
+			if(fixArr==null){
+				fixArr=[];
+			} //if
+			fixArr.push(retDiv);
+			window.localStorage["fixArr"]=fixArr;
+			
 			return false;
 		});
 		

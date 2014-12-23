@@ -251,7 +251,15 @@ model=new Model();
 
 <script type="text/javascript">
 $("#preparedItemCount").css("color", model.clienBlue);
+
 wsController.requestMsging();
+
+var fixArr=localStorage["fixArr"];
+if(fixArr!=null){
+	for(i=0; i<fixArr.length; i++){
+		view.fixItem(fixArr[i]);
+	} //for i
+} //if
 </script>
 
 </body>
