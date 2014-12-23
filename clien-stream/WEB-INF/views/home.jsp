@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -102,7 +103,8 @@
 <script src="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/js/jquery.js"></script>
 <script src="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/js/bootstrap.min.js"></script>
 <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
-<script src="<c:url value="/resource/js/home.js" /> "></script>
+<script src="<c:url value="/resource/js/common.js?ver=6" /> "></script>
+<script src="<c:url value="/resource/js/home.js?ver=3" /> "></script>
 <script type="text/javascript">
 var controller;
 var wsController;
@@ -215,7 +217,7 @@ function View(){
 	this.viewArticle=function(bbsName, num, title){
 		var url= "http://www.clien.net/cs2/bbs/board.php?bo_table=" + bbsName + "&wr_id=" + num;
 		var articleView=$("#articleView").html("");
-		articleView.show(100).append(commonUtil.getObjectEmbedNode(url, 780, 580)).dialog({
+		articleView.show(100).append(homeUtil.getObjectEmbedNode(url, 780, 580)).dialog({
 			close: function(event, ui){
 				articleView.hide().html("");
 			},
@@ -237,7 +239,7 @@ function Model(){
 	this.clienBlue="rgb(55, 66, 155)";
 	
 	this.storeItem=function(itemStr){
-		var parsedBbsItem=parser.parseBbsItem(itemStr, view);
+		var parsedBbsItem=bbsParser.parseBbsItem(itemStr, view);
 		model.preparedItems.push(parsedBbsItem);
 		view.refreshPreparedCount();
 	} //storeItem
@@ -254,7 +256,7 @@ $("#preparedItemCount").css("color", model.clienBlue);
 
 wsController.requestMsging();
 
-var fixArr=localStorage["fixArr"];
+var fixArr=objectStorage.getDOM("fixArr");
 if(fixArr!=null){
 	for(i=0; i<fixArr.length; i++){
 		view.fixItem(fixArr[i]);

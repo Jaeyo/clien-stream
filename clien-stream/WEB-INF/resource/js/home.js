@@ -1,7 +1,7 @@
-var parser;
-var commonUtil;
+var bbsParser;
+var homeUtil;
 
-function Parser(){
+function BbsParser(){
 	this.parseBbsItem=function(itemStr, view){
 		var jsonItem=JSON.parse(itemStr);
 		
@@ -36,12 +36,12 @@ function Parser(){
 		rowDiv.find("a.delete_item").click(function(){
 			retDiv.remove();
 			
-			var fixArr=window.localStorage["fixArr"]; TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+			var fixArr=objectStorage.getDOM("fixArr");
 			if(fixArr!=null){
 				var index=fixArr.indexOf(retDiv);
 				if(index!=-1){
 					fixArr.splice(index, 1);
-					window.localStorage["fixArr"]=fixArr;
+					objectStorage.setDOM("fixArr", fixArr);
 				} //if
 			} //if
 			
@@ -51,12 +51,12 @@ function Parser(){
 		rowDiv.find("a.fix_item").click(function(){
 			view.fixItem(retDiv);
 			
-			var fixArr=window.localStorage["fixArr"];
+			var fixArr=objectStorage.getDOM("fixArr");
 			if(fixArr==null){
 				fixArr=[];
 			} //if
 			fixArr.push(retDiv);
-			window.localStorage["fixArr"]=fixArr;
+			objectStorage.setDOM("fixArr", fixArr);
 			
 			return false;
 		});
@@ -68,7 +68,7 @@ function Parser(){
 	} //parseBbsItem
 } //function Parser
 
-function CommonUtil(){
+function HomeUtil(){
 	this.getObjectEmbedNode=function(url, width, height){
 		var objectNode=$("<object />").attr("data", url).attr("width", width+150).attr("height", height+170);
 		objectNode.css("position", "relative").css("left", -150).css("top", -170);
@@ -78,5 +78,5 @@ function CommonUtil(){
 	} //getObjectEmbedNode
 } //function CommonUtil
 
-parser=new Parser();
-commonUtil=new CommonUtil();
+bbsParser=new BbsParser();
+homeUtil=new HomeUtil();
