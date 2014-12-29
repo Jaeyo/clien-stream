@@ -3,9 +3,6 @@ var homeUtil;
 
 function BbsUtil(){
 	this.registerClickEvent=function(item, view, afterClickColor){
-		console.log("registerClickEvent"); //DEBUG
-		console.log(item); //DEBUG
-		
 		
 		item.click(function(){
 			var bbsName=item.find("input.bbs_name").attr("value");
@@ -20,31 +17,20 @@ function BbsUtil(){
 			
 			item.find("a.delete_item").click(function(){
 				item.remove();
-				var fixedContents=objectStorage.getDOM("fixedContents");
-				if(fixedContents!=null){
-					fixedContents.find("num_" + num).remove();
-					objectStorage.setDOM("fixedContents", fixedContents);
-				} //if
+				storedb("fixedContents").remove({"num" : num});
+				view.showFixedItems();
 				return false;
 			});
 			
 			item.find("a.fix_item").click(function(){
-				var fixedContents=objectStorage.getDOM("fixedContents");
-				if(fixedContents==null)
-					fixedContents=$("<div />").attr("id", "fixed_contents");
-				fixedContents.append(item);
-				objectStorage.setDOM("fixedContents", fixedContents);
-			
+				storedb("fixedContents").insert(bbsUtil.htmlToObj(item));
 				view.showFixedItems();
-			
 				return false;
 			});
 		});
 	} //registerClickEvent
 
-	this.jsonToHtml=function(jsonStr){
-		var jsonObj=JSON.parse(jsonStr);
-		
+	this.objToHtml=function(jsonObj){
 		var numHtml=$("<small />").append(jsonObj.num);
 		var titleHtml=$("<strong />").append(jsonObj.title);
 		var dateHtml=$("<small />").append(jsonObj.date);
@@ -75,9 +61,9 @@ function BbsUtil(){
 		retDiv.hide();
 		
 		return retDiv;
-	} //jsonToHtml
+	} //objToHtml
 	
-	this.htmlToJson=function(itemHtml){
+	this.htmlToObj=function(itemHtml){
 		var jsonObj=new Object();
 		
 		jsonObj.num=itemHtml.find("div.item_num").find("small").text();
@@ -92,7 +78,7 @@ function BbsUtil(){
 		} //if
 		
 		return jsonObj;
-	} //htmlToJson
+	} //htmlToObj
 } //function BbsUtil
 
 function HomeUtil(){

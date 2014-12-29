@@ -103,6 +103,7 @@
 <script src="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/js/jquery.js"></script>
 <script src="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/js/bootstrap.min.js"></script>
 <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+<script src="<c:url value="/resource/js/storedb.js" /> "></script>
 <script src="<c:url value="/resource/js/common.js?ver=14" /> "></script>
 <script src="<c:url value="/resource/js/home.js?ver=11" /> "></script>
 <script type="text/javascript">
@@ -167,18 +168,17 @@ function View(){
 	} //addItem
 	
 	this.showFixedItems=function(){
-		var fixedContents=objectStorage.getDOM("fixedContents");
-		if(fixedContents!=null){
-			var bbsItem=fixedContents.find("div.bbsItem");
-			if(bbsItem.length!=null && bbsItem.length!=1){
-				for(i=0; i<bbsItem.length; i++){
-					bbsUtil.registerClickEvent(bbsItem[i], view, model.afterClickColor);
-				} //for i
-			} else{
-				bbsUtil.registerClickEvent(bbsItem, view, model.afterClickColor);
-			} //if
-			$("#fixed_contents").html(fixedContents.html());
-		} //if
+		var storedFixedContents=storedb("fixedContents").find();
+		var fixedContentsHtml=$("<div />");
+		
+		for(i=0; i<storedFixedContents.length; i++){
+			var bbsItemObj=storedFixedContents[i];
+			var bbsItemHtml=bbsUtil.objToHtml(bbsItemObj);
+			bbsUtil.registerClickEvent(bbsItemHtml, view, model.afterClickColor);
+			fixedContentsHtml.append(bbsItemHtml);
+		} //for i
+		
+		$("#fixed_contents").html(fixedContentsHtml.html());
 	} //showFixedItems
 	
 	this.showPreparedItems=function(){
