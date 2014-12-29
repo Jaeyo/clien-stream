@@ -1,68 +1,99 @@
-var bbsParser;
+var bbsUtil;
 var homeUtil;
 
-function BbsParser(){
-	this.parseBbsItem=function(itemStr, view){
-		var jsonItem=JSON.parse(itemStr);
+function BbsUtil(){
+	this.registerClickEvent=function(item, view, afterClickColor){
+		console.log("registerClickEvent"); //DEBUG
+		console.log(item); //DEBUG
 		
-		var retDiv=$("<div />")
-		retDiv.css("display", "none").css("margin", "0").css("padding", "0");
-		retDiv.addClass("bbsItem");
-		retDiv.attr("id", "num_" + jsonItem.num);
 		
-		var rowDiv=$("<div />").addClass("row");
-		rowDiv.append($("<div />").addClass("col-lg-1").addClass("item_num"));
-		rowDiv.append($("<div />").addClass("col-lg-7").addClass("item_title"));
-		rowDiv.append($("<div />").addClass("col-lg-2").addClass("item_nick"));
-		rowDiv.append($("<div />").addClass("col-lg-1").addClass("item_date"));
-		rowDiv.append($("<div />").addClass("col-lg-1").addClass("item_option"));
-		rowDiv.find("div.item_option").append($("<a>[-]</a>").attr("href", "#").addClass("delete_item"));
-		rowDiv.find("div.item_option").append($("<a>[+]</a>").attr("href", "#").addClass("fix_item"));
+		item.click(function(){
+			var bbsName=item.find("input.bbs_name").attr("value");
+			var num=item.find("div.item_num").text();
+			var title=item.find("div.item_title").text();
+			
+			item.click(function(){
+				view.viewArticle(bbsName, num, title);
+				item.css("background-color", afterClickColor);
+				return false;
+			});
+			
+			item.find("a.delete_item").click(function(){
+				item.remove();
+				var fixedContents=objectStorage.getDOM("fixedContents");
+				if(fixedContents!=null){
+					fixedContents.find("num_" + num).remove();
+					objectStorage.setDOM("fixedContents", fixedContents);
+				} //if
+				return false;
+			});
+			
+			item.find("a.fix_item").click(function(){
+				var fixedContents=objectStorage.getDOM("fixedContents");
+				if(fixedContents==null)
+					fixedContents=$("<div />").attr("id", "fixed_contents");
+				fixedContents.append(item);
+				objectStorage.setDOM("fixedContents", fixedContents);
+			
+				view.showFixedItems();
+			
+				return false;
+			});
+		});
+	} //registerClickEvent
+
+	this.jsonToHtml=function(jsonStr){
+		var jsonObj=JSON.parse(jsonStr);
 		
-		rowDiv.find("div.item_num").append($("<small />").append(jsonItem.num));
-		rowDiv.find("div.item_title").append($("<strong />").append(jsonItem.title));
-		rowDiv.find("div.item_date").append($("<small />").append(jsonItem.date));
-		if(jsonItem.nick==null){
-			rowDiv.find("div.item_nick").append($("<img />").attr("src", jsonItem.imgNickPath));
+		var numHtml=$("<small />").append(jsonObj.num);
+		var titleHtml=$("<strong />").append(jsonObj.title);
+		var dateHtml=$("<small />").append(jsonObj.date);
+		var nickHtml;
+		if(jsonObj.nick==null){
+			nickHtml=$("<img />").attr("src", jsonObj.imgNickPath);
 		} else{
-			rowDiv.find("div.item_nick").append(jsonItem.nick);
+			nickHtml=$("<div />").append(jsonObj.nick);
 		} //if
 		
-		rowDiv.click(function(){
-			view.viewArticle(jsonItem.bbsName, jsonItem.num, jsonItem.title);
-			retDiv.css("background-color",  "rgb(230, 230, 230)");
-		});
+		var deleteItemOptionHtml=$("<a>[-]</a>").attr("href", "#").addClass("delete_item");
+		var fixItemOptionHtml=$("<a>[+]</a>").attr("href", "#").addClass("fix_item");
 		
-		rowDiv.find("a.delete_item").click(function(){
-			retDiv.remove();
-			
-			var fixedContents=objectStorage.getDOM("fixedContents");
-			if(fixedContents!=null){
-				fixedContents.find("num_" + jsonItem.num).remove();
-				objectStorage.setDOM("fixedContents", fixedContents);
-			} //if
-			
-			return false;
-		});
+		var rowDiv=$("<div />").addClass("row");
+		rowDiv.append($("<input />").attr("type", "hidden").addClass("bbs_name").attr("value", jsonObj.bbsName));
+		rowDiv.append($("<div />").addClass("col-lg-1").addClass("item_num").append(numHtml));
+		rowDiv.append($("<div />").addClass("col-lg-7").addClass("item_title").append(titleHtml));
+		rowDiv.append($("<div />").addClass("col-lg-2").addClass("item_nick").append(nickHtml));
+		rowDiv.append($("<div />").addClass("col-lg-1").addClass("item_date").append(dateHtml));
+		rowDiv.append($("<div />").addClass("col-lg-1").addClass("item_option").append(deleteItemOptionHtml).append(fixItemOptionHtml));
 		
-		rowDiv.find("a.fix_item").click(function(){
-			var fixedContents=objectStorage.getDOM("fixedContents");
-			if(fixedContents==null)
-				fixedContents=$("<div />").attr("id", "fixed_contents");
-			fixedContents.append(retDiv);
-			objectStorage.setDOM("fixedContents", fixedContents);
-			
-			view.showFixedItems();
-			
-			return false;
-		});
-		
-		retDiv.append(rowDiv);
+		var retDiv=$("<div />").append(rowDiv);
+		retDiv.css("display", "none").css("margin", "0").css("padding", "0");
+		retDiv.addClass("bbsItem");
+		retDiv.attr("id", "num_" + jsonObj.num);
 		retDiv.append($("<hr>").css("margin", "0").css("padding", "0"));
+		
 		retDiv.hide();
+		
 		return retDiv;
-	} //parseBbsItem
-} //function Parser
+	} //jsonToHtml
+	
+	this.htmlToJson=function(itemHtml){
+		var jsonObj=new Object();
+		
+		jsonObj.num=itemHtml.find("div.item_num").find("small").text();
+		jsonObj.title=itemHtml.find("div.item_title").find("strong").text();
+		jsonObj.date=itemHtml.find("div.item_date").find("small").text();
+		jsonObj.nick=null;
+		jsonObj.imgNickPath=null;
+		if(itemHtml.find("div.item_nick").find("img")==null){
+			jsonObj.nick=itemHtml.find("div.item_nick").text();
+		} else{
+			jsonObj.imgNickPath=itemHtml.find("div.item_nick").find("img").attr("src");
+		} //if
+		
+		return jsonObj;
+	} //htmlToJson
+} //function BbsUtil
 
 function HomeUtil(){
 	this.getObjectEmbedNode=function(url, width, height){
@@ -74,5 +105,5 @@ function HomeUtil(){
 	} //getObjectEmbedNode
 } //function CommonUtil
 
-bbsParser=new BbsParser();
+bbsUtil=new BbsUtil();
 homeUtil=new HomeUtil();
