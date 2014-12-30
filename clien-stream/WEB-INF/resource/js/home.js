@@ -21,10 +21,15 @@ function BbsUtil(){
 		});
 			
 		item.find("a.fix_item").click(function(){
+			//check duplicate
+			if(storedb("fixedContents").find({"num" : num}).length!=0){
+				console.log("failed to fix item, already exsits");
+				return false;
+			} //if
+			
 			var itemObj=bbsUtil.htmlToObj(item);
-			console.log("fix item"); //DEBUG
-			console.log(itemObj); //DEBUG
 			storedb("fixedContents").insert(itemObj);
+			item.remove();
 			view.showFixedItems();
 			return false;
 		});
@@ -53,13 +58,12 @@ function BbsUtil(){
 		rowDiv.append($("<div />").addClass("col-lg-1").addClass("item_option").append(deleteItemOptionHtml).append(fixItemOptionHtml));
 		
 		var retDiv=$("<div />").append(rowDiv);
-		retDiv.css("display", "none").css("margin", "0").css("padding", "0");
+		retDiv.css("margin", "0").css("padding", "0");
 		retDiv.addClass("bbsItem");
 		retDiv.attr("id", "num_" + jsonObj.num);
 		retDiv.append($("<hr>").css("margin", "0").css("padding", "0"));
 		
-		retDiv.hide();
-		
+		//retDiv.hide();
 		return retDiv;
 	} //objToHtml
 	
@@ -71,7 +75,7 @@ function BbsUtil(){
 		jsonObj.date=itemHtml.find("div.item_date").find("small").text();
 		jsonObj.nick=null;
 		jsonObj.imgNickPath=null;
-		if(itemHtml.find("div.item_nick").find("img")==null){
+		if(itemHtml.find("div.item_nick").find("img").length==0){
 			jsonObj.nick=itemHtml.find("div.item_nick").text();
 		} else{
 			jsonObj.imgNickPath=itemHtml.find("div.item_nick").find("img").attr("src");
