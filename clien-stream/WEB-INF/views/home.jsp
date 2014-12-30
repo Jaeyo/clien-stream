@@ -104,8 +104,7 @@
 <script src="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/js/bootstrap.min.js"></script>
 <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 <script src="<c:url value="/resource/js/storedb.js" /> "></script>
-<script src="<c:url value="/resource/js/common.js?ver=14" /> "></script>
-<script src="<c:url value="/resource/js/home.js?ver=11" /> "></script>
+<script src="<c:url value="/resource/js/home.js?ver=16" /> "></script>
 <script type="text/javascript">
 var controller;
 var wsController;
@@ -162,9 +161,9 @@ function WsController(){
 
 
 function View(){
-	this.addItem=function(item){
-		bbsUtil.registerClickEvent(item, view, model.afterClickColor);
-		item.hide().insertAfter($("#contents")).show("300");
+	this.addItem=function(itemHtml){
+		bbsUtil.registerClickEvent(itemHtml, view, model.afterClickColor);
+		itemHtml.hide().insertAfter($("#contents")).show("300");
 	} //addItem
 	
 	this.showFixedItems=function(){
@@ -250,7 +249,8 @@ function Model(){
 	this.clienBlue="rgb(55, 66, 155)";
 	
 	this.storeItem=function(itemStr){
-		var parsedBbsItem=bbsUtil.jsonToHtml(itemStr, view); //TODO check
+		var itemObj=JSON.parse(itemStr);
+		var parsedBbsItem=bbsUtil.objToHtml(itemObj, view); 
 		model.preparedItems.push(parsedBbsItem);
 		view.refreshPreparedCount();
 	} //storeItem

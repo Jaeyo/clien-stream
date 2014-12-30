@@ -3,30 +3,30 @@ var homeUtil;
 
 function BbsUtil(){
 	this.registerClickEvent=function(item, view, afterClickColor){
+		var bbsName=item.find("input.bbs_name").attr("value");
+		var num=item.find("div.item_num").text();
+		var title=item.find("div.item_title").text();
 		
 		item.click(function(){
-			var bbsName=item.find("input.bbs_name").attr("value");
-			var num=item.find("div.item_num").text();
-			var title=item.find("div.item_title").text();
+			view.viewArticle(bbsName, num, title);
+			item.css("background-color", afterClickColor);
+			return false;
+		});
 			
-			item.click(function(){
-				view.viewArticle(bbsName, num, title);
-				item.css("background-color", afterClickColor);
-				return false;
-			});
+		item.find("a.delete_item").click(function(){
+			item.remove();
+			storedb("fixedContents").remove({"num" : num});
+			view.showFixedItems();
+			return false;
+		});
 			
-			item.find("a.delete_item").click(function(){
-				item.remove();
-				storedb("fixedContents").remove({"num" : num});
-				view.showFixedItems();
-				return false;
-			});
-			
-			item.find("a.fix_item").click(function(){
-				storedb("fixedContents").insert(bbsUtil.htmlToObj(item));
-				view.showFixedItems();
-				return false;
-			});
+		item.find("a.fix_item").click(function(){
+			var itemObj=bbsUtil.htmlToObj(item);
+			console.log("fix item"); //DEBUG
+			console.log(itemObj); //DEBUG
+			storedb("fixedContents").insert(itemObj);
+			view.showFixedItems();
+			return false;
 		});
 	} //registerClickEvent
 
