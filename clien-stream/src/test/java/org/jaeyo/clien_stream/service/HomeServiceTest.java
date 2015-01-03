@@ -38,37 +38,6 @@ public class HomeServiceTest {
 	} //init	
 	
 	@Test
-	public void test_fixedItems(){
-		init();
-		HomeService service=new HomeService();
-		long bbsItemNum=1234;
-		BbsItem item=new BbsItem(bbsItemNum, "test_title", "test_nick", null, System.currentTimeMillis(), 0, BbsNames.PARK.toString().toLowerCase());
-		
-		HttpServletRequest request=Mockito.mock(HttpServletRequest.class);
-		HttpServletResponse response=Mockito.mock(HttpServletResponse.class);
-		
-		try {
-			String persistenceSessionid=service.generatePersistenceSessionId();
-			Cookie cookie=CookieUtil.createCookie("persistenceSessionId", persistenceSessionid, "/", 60*60*24*365);
-			response.addCookie(cookie);
-			BDDMockito.given(request.getCookies()).willReturn(new Cookie[]{cookie});
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			fail();
-		} //catch
-				
-		assertTrue(service.putFixedItems(BbsNames.PARK, item, response, request));
-		
-		List<BbsItem> fixedItems=service.getFixedItems(BbsNames.PARK, request);
-		assertTrue(fixedItems!=null && fixedItems.size()!=0);
-		
-		assertTrue(service.removeFixedItem(BbsNames.PARK, bbsItemNum, request));
-		
-		fixedItems=service.getFixedItems(BbsNames.PARK, request);
-		assertNull(fixedItems);
-	} //test_fixedItems
-	
-	@Test
 	public void test_selectArticle1() {
 		init();
 		DBCollection coll=MongoDbAdapter.getInstance().getCollection(String.format("bbsItem_%s", BbsNames.PARK));
