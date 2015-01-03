@@ -1,4 +1,3 @@
-
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -25,56 +24,6 @@
 
 	<div id="wrapper">
 	
-		<!-- sidebar -->
-		<div id="sidebar-wrapper">
-			<ul class="sidebar-nav">
-				<li class="sidebar-brand">
-					<a href="${pageContext.request.contextPath}/home/">clien stream</a>
-				</li>
-				<li>
-					<a href="${pageContext.request.contextPath}/home/park">모두의 공원</a>
-				</li>
-				<li>
-					<a href="${pageContext.request.contextPath}/home/image/">사진 게시판</a>
-				</li>
-				<li>
-					<a href="${pageContext.request.contextPath}/home/kin/">아무거나 질문</a>
-				</li>
-				<li>
-					<a href="${pageContext.request.contextPath}/home/news/">새로운 소식</a>
-				</li>
-				<li>
-					<a href="${pageContext.request.contextPath}/home/lecture/">팁과 강좌</a>
-				</li>
-				<li>
-					<a href="${pageContext.request.contextPath}/home/use/">사용기 게시판</a>
-				</li>
-				<li>
-					<a href="${pageContext.request.contextPath}/home/chehum/">체험단사용기</a>
-				</li>
-				<li>
-					<a href="${pageContext.request.contextPath}/home/useful/">유용한사이트</a>
-				</li>
-				<li>
-					<a href="${pageContext.request.contextPath}/home/jirum/">알뜰구매</a>
-				</li>
-				<li>
-					<a href="${pageContext.request.contextPath}/home/coupon/">쿠폰/이벤트</a>
-				</li>
-				<li>
-					<a href="${pageContext.request.contextPath}/home/hongbo/">직접 홍보</a>
-				</li>
-				<li>
-					<a href="${pageContext.request.contextPath}/home/pds/">자료실</a>
-				</li>
-				<li>
-					<a href="${pageContext.request.contextPath}/home/sold/">회원중고장터</a>
-				</li>
-				<!-- TODO -->
-			</ul>
-		</div>
-		<!-- //sidebar-wrapper -->
-		
 		<!-- page content -->
 		<div id="page-content-wrapper">
 			<div class="container-fluid">
@@ -87,7 +36,7 @@
 				
 				<div id="fixed_contents"></div>
 				
-				<input type="button" class="form-control" value="새로운 글이 0건 있습니다." id="preparedItemCount" onclick="javascript:view.showPreparedItems()" />
+				<input type="button" class="form-control" value="새로운 글이 0건 있습니다." id="newItemCount" onclick="javascript:view.showNewItems()" />
 				
 				<hr>
 				
@@ -103,8 +52,7 @@
 <script src="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/js/jquery.js"></script>
 <script src="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/js/bootstrap.min.js"></script>
 <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
-<script src="<c:url value="/resource/js/common.js?ver=14" /> "></script>
-<script src="<c:url value="/resource/js/home.js?ver=11" /> "></script>
+<script src="<c:url value="/resource/js/home.js?ver=25" /> "></script>
 <script type="text/javascript">
 var controller;
 var wsController;
@@ -123,8 +71,8 @@ function WsController(){
 	
 	this.socket.onmessage=function(e){
 		console.log("[WebSocket->onmessage] ");
-		var item=e.data;
-		model.storeItem(item);
+		var itemObj=JSON.parse(e.data);
+		model.storeNewItem(itemObj);
 	} //onmessage
 	
 	this.socket.onclose=function(){
@@ -132,7 +80,6 @@ function WsController(){
 	} //onclose
 	
 	this.requestMsging=function(){
-		console.log("request msging");
 		jsonMsg=new Object();
 		jsonMsg.bbsName="${bbsName}";
 		this.waitForSocketConnection(function(){
@@ -159,70 +106,73 @@ function WsController(){
 } //WsController
 
 
-
 function View(){
-	this.addItem=function(item){
-		bbsUtil.registerClickEvent(item, view, model.afterClickColor);
-		item.hide().insertAfter($("#contents")).show("300");
-	} //addItem
-	
 	this.showFixedItems=function(){
-		var fixedContents=objectStorage.getDOM("fixedContents");
-		if(fixedContents!=null){
-			var bbsItem=fixedContents.find("div.bbsItem");
-			if(bbsItem.length!=null && bbsItem.length!=1){
-				for(i=0; i<bbsItem.length; i++){
-					bbsUtil.registerClickEvent(bbsItem[i], view, model.afterClickColor);
-				} //for i
-			} else{
-				bbsUtil.registerClickEvent(bbsItem, view, model.afterClickColor);
-			} //if
-			$("#fixed_contents").html(fixedContents.html());
-		} //if
+		var storedFixedContents=storedb("fixedContents").find();
+		var fixedContentsHtml=$("<div />");
+		
+		console.log("storedFixedContents.length : " + storedFixedContents.length); 
+		
+		for(i=0; i<storedFixedContents.length; i++){
+			var bbsItemObj=storedFixedContents[i];
+			var bbsItemHtml=bbsUtil.objToHtml(bbsItemObj);
+			fixedContentsHtml.append(bbsItemHtml);
+		} //for i
+		
+		$("#fixed_contents").html(fixedContentsHtml.html());
+		
+		var bbsItemArr=$("#fixed_contents").find("div.bbsItem");
+		for(i=0; i<bbsItemArr.length; i++)
+			bbsUtil.registerClickEvent(bbsItemArr[i], view, model.afterClickColor);
 	} //showFixedItems
 	
-	this.showPreparedItems=function(){
-		if(model.preparedItems.length==0)
+	this.showNewItems=function(){
+		var newItemCount=model.newItemArr.length;
+		if(newItemCount==0)
 			return;
 		
-		var itemCount=model.preparedItems.length;
-		var tmpItemArr=[];
-		for(i=0; i<itemCount; i++){
-			tmpItemArr.push(model.preparedItems.pop());
+		var reversedNewItemArr=[];
+		for(i=0; i<newItemCount; i++){
+			reversedNewItemArr.push(model.newItemArr.pop());
 		} //for i
 		
-		itemCount=tmpItemArr.length;
-		for(i=0; i<itemCount; i++){
-			view.addItem(tmpItemArr.pop());
+		newItemCount=reversedNewItemArr.length;
+		for(i=0; i<newItemCount; i++){
+			var newItemObj=reversedNewItemArr[i];
+			var newItemDOM=bbsUtil.objToHtml(newItemObj);
+			bbsUtil.registerClickEvent(newItemDOM, view, model.afterClickColor);
+			
+			newItemDOM.hide();
+			$("#contents").append(newItemDOM);
+			newItemDOM.show("300");
 		} //for i
 		
-		view.refreshPreparedCount();
-		view.removeOldItem(); 
-	} //showPreparedItems
+		view.refreshNewItemCount();
+		view.removeOldItem();
+	} //showNewItems
 	
 	this.removeOldItem=function(){
-		var itemArr=$("div.bbsItem");
-		var maxCount=17;
-		if(itemArr.length<maxCount) 
+		var itemArr=$("#contents").find("div.bbsItem");
+		if(itemArr.length<model.maxItemCount) 
 			return;
 		
-		var removeCount=itemArr.length-maxCount;
+		var removeCount=itemArr.length-model.maxItemCount;
 		for(i=0; i<removeCount; i++){
 			$(itemArr[itemArr.length-1]).remove();
 			itemArr.splice(itemArr.length-1, 1);
 		} //for i
 	} //removeOldItem
 	
-	this.refreshPreparedCount=function(){
-		var count=model.preparedItems.length;
-		var preparedItemCountNode=$("#preparedItemCount");
-		preparedItemCountNode.attr("value", "새로운 글이 " + count+ "건 있습니다.");
+	this.refreshNewItemCount=function(){
+		var count=model.newItemArr.length;
+		var newItemCountDOM=$("#newItemCount");
+		newItemCountDOM.attr("value", "새로운 글이 " + count + "건 있습니다.");
 		if(count!=0){
-			preparedItemCountNode.css("background-color", model.clienBlue).css("color", "white");
+			newItemCountDOM.css("background-color", model.clienBlue).css("color", "white");
 		} else{
-			preparedItemCountNode.css("background-color", "white").css("color", model.clienBlue);
+			newItemCountDOM.css("background-color", "white").css("color", model.clienBlue);
 		} //if
-	} //setPreparedCount
+	} //refreshNewItemCount
 	
 	this.viewArticle=function(bbsName, num, title){
 		var url= "http://www.clien.net/cs2/bbs/board.php?bo_table=" + bbsName + "&wr_id=" + num;
@@ -245,15 +195,15 @@ function View(){
 
 
 function Model(){
-	this.preparedItems=[];
+	this.newItemArr=[];
 	this.afterClickColor="rgb(230, 230, 230)";
 	this.clienBlue="rgb(55, 66, 155)";
+	this.maxItemCount=17;
 	
-	this.storeItem=function(itemStr){
-		var parsedBbsItem=bbsUtil.jsonToHtml(itemStr, view); //TODO check
-		model.preparedItems.push(parsedBbsItem);
-		view.refreshPreparedCount();
-	} //storeItem
+	this.storeNewItem=function(itemObj){
+		model.newItemArr.push(itemObj);
+		view.refreshNewItemCount();
+	} //storeNewItem
 } //Model
 
 controller=new Controller();
@@ -266,7 +216,6 @@ model=new Model();
 $("#preparedItemCount").css("color", model.clienBlue);
 
 wsController.requestMsging();
-
 view.showFixedItems();
 </script>
 
