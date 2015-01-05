@@ -97,14 +97,6 @@ public class BbsItem implements Serializable{
 		this.bbsName = bbsName;
 	}
 
-//	public ArticleItem getArticle() {
-//		return article;
-//	}
-//
-//	public void setArticle(ArticleItem article) {
-//		this.article = article;
-//	}
-
 	public BasicDBObject toDBObject() {
 		BasicDBObject dbObj = new BasicDBObject();
 		dbObj.put("num", getNum());
@@ -115,13 +107,10 @@ public class BbsItem implements Serializable{
 		dbObj.put("hit", getHit());
 		dbObj.put("bbsName", getBbsName());
 		
-//		if(getArticle()!=null)
-//			dbObj.put("article", getArticle().toDBObject());
-		
 		return dbObj;
 	} // toDBObject
 	
-	public String toJSON(){
+	public JSONObject toJSON(){
 		JSONObject json=new JSONObject();
 		json.put("num", getNum());
 		json.put("title", getTitle());
@@ -130,9 +119,7 @@ public class BbsItem implements Serializable{
 		json.put("date", dateFormat.format(getDate()));
 		json.put("hit", getHit());
 		json.put("bbsName", getBbsName());
-		
-//		if(getArticle()!=null)
-//			json.put("article", getArticle().toJSON());
-		return json.toString();
+		return json;
+//		return json.toString();
 	} //toJSON
 } // class /

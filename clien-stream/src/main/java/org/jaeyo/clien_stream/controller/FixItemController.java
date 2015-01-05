@@ -35,25 +35,37 @@ public class FixItemController {
 	public @ResponseBody String putFixBbsItem(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable(value = "bbsName") String bbsName,
 			@PathVariable(value = "num") String num) {
+		long numLong;
+
+		try {
+			numLong = Long.parseLong(num);
+		} catch (NumberFormatException e) {
+			String msg=String.format("invalid num : %s", num);
+			logger.error(msg);
+			return new JSONObject().put("success", 0).put("desc", msg).toString();
+		} // if
+		
 		String collectionName = String.format("bbsItem_%s", bbsName.toUpperCase());
 		DBCollection coll = MongoDbAdapter.getInstance().getCollection(collectionName);
-
-		DBCursor findResult = coll.find(new BasicDBObject().append("num", num));
+		
+		DBCursor findResult = coll.find(new BasicDBObject("num", new BasicDBObject("$eq", numLong)));
 		if (!findResult.hasNext()) {
-			logger.warn("find job has no result for num : {}, bbsName : {}", num, bbsName);
-			return new JSONObject().append("success", "0").toString();
+			String msg=String.format("find job has no result for num : %s, bbsName : %s", num, bbsName);
+			logger.warn(msg);
+			return new JSONObject().put("success", 0).put("desc", msg).toString();
 		} // if
 
 		BasicDBObject bbsItemObj = (BasicDBObject) findResult.next();
 		BbsItem bbsItem = new BbsItem(bbsItemObj);
 
-		boolean result = fixItemService.putFixedItems(BbsNames.valueOf(bbsName), bbsItem, response, request);
+		boolean result = fixItemService.putFixedItems(BbsNames.valueOf(bbsName.toUpperCase()), bbsItem, response, request);
 		if (!result) {
-			logger.error("failed to put FixedItem, bbsName : {}, num : {}", bbsName, num);
-			return new JSONObject().append("success", "0").toString();
+			String msg=String.format("failed to put FixedItem, bbsName : %s, num : %s", bbsName, num);
+			logger.error(msg);
+			return new JSONObject().put("success", 0).put("desc", msg).toString();
 		} // if
 
-		return new JSONObject().append("success", "1").toString();
+		return new JSONObject().put("success", 1).toString();
 	} // putFixBbsItem
 
 	@RequestMapping(value = "/getFixBbsItem/{bbsName}", method = RequestMethod.GET)
@@ -61,15 +73,19 @@ public class FixItemController {
 			@PathVariable(value = "bbsName") String bbsName) {
 		List<BbsItem> bbsItems = fixItemService.getFixedItems(BbsNames.valueOf(bbsName.toUpperCase()), request);
 		if (bbsItems == null) {
-			logger.warn("getFixedItems() has no result for bbsName : {}", bbsName);
-			return new JSONObject().append("success", "0").toString();
+			logger.info("getFixedItems() has no result for bbsName : {}", bbsName);
+			return new JSONObject().put("success", 1).put("count", 0).toString();
 		} // if
 
-		JSONArray dataArr = new JSONArray();
+		JSONObject retJson=new JSONObject();
+		retJson.put("success", 1);
+		retJson.put("count", bbsItems.size());
+		
 		for (BbsItem bbsItem : bbsItems)
-			dataArr.put(bbsItem.toJSON());
+			retJson.append("data", bbsItem.toJSON());
 
-		return new JSONObject().append("success", "1").append("data", dataArr).toString();
+//		return new JSONObject().put("success", "1").put("data", dataArr).toString();
+		return retJson.toString();
 	} // getFixBbsItems
 
 	@RequestMapping(value = "/removeFixBbsItem/{bbsName}/{num}", method = RequestMethod.GET)
@@ -81,16 +97,18 @@ public class FixItemController {
 		try {
 			numLong = Long.parseLong(num);
 		} catch (NumberFormatException e) {
-			logger.error("invalid num : {}", num);
-			return new JSONObject().append("success", "0").toString();
+			String msg=String.format("invalid num : %s", num);
+			logger.error(msg);
+			return new JSONObject().put("success", 0).put("desc", msg).toString();
 		} // if
 
 		boolean result = fixItemService.removeFixedItem(BbsNames.valueOf(bbsName.toUpperCase()), numLong, request);
 		if (!result) {
-			logger.warn("failed to remove FixedItem for bbsName : {}, num  : {}", bbsName, numLong);
-			return new JSONObject().append("success", "0").toString();
+			String msg=String.format("failed to remove FixedItem for bbsName : %s, num  : %s", bbsName, numLong);
+			logger.warn(msg);
+			return new JSONObject().put("success", 0).put("desc", msg).toString();
 		} // if
 
-		return new JSONObject().append("success", "1").toString();
+		return new JSONObject().put("success", 1).toString();
 	} // getFixBbsItems
 } // class

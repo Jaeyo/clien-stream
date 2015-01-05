@@ -32,7 +32,7 @@ public class WebSocketMessageListener implements MessageListener {
 			} // if
 	
 			BbsItem bbsItem= (BbsItem) ((ObjectMessage) message).getObject();
-			socket.send(bbsItem.toJSON());
+			socket.send(bbsItem.toJSON().toString());
 		} catch (JMSException e) {
 			e.printStackTrace();
 		} // catch

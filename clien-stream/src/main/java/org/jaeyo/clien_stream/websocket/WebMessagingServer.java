@@ -49,7 +49,7 @@ public class WebMessagingServer extends WebSocketServer {
 			String bbsName=json.getString("bbsName");
 	
 			for(BbsItem item : new HomeService().selectArticles(BbsNames.valueOf(bbsName.toUpperCase()), 100))
-				conn.send(item.toJSON());
+				conn.send(item.toJSON().toString());
 			
 			String topic=String.format("topic-%s", bbsName);
 			WebSocketMessageListener mqListener=new WebSocketMessageListener(conn);

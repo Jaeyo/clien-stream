@@ -52,26 +52,6 @@ public class ParseTask extends TimerTask {
 				logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName()));
 			} //catch
 		} //for item
-		
-//		for(Long unstoredNum : findUnstoredArticle()){
-//			ArticleItem parsedArticle=parser.parseArticle(bbsName, unstoredNum);
-//			if(parsedArticle==null)
-//				continue;
-//			updateArticle(unstoredNum, parsedArticle);
-//
-//			for(BbsItem item : items){
-//				try{
-//					if(item.getNum()==unstoredNum){
-//						item.setArticle(parsedArticle);
-//						String topic=String.format("topic-%s", bbsName.toString().toLowerCase()); 
-//						ActiveMQAdapter.produceMessage(topic, item);
-//						break;
-//					} //if
-//				} catch(JMSException e){
-//					logger.error(String.format("%s, errmsg : %s", e.getClass().getSimpleName(), e.getMessage()), e);
-//				} //catch
-//			} //for i
-//		} //for unstoredNum
 	} // run
 	
 	private void insertBbsItems(ArrayList<BbsItem> items){
@@ -103,32 +83,4 @@ public class ParseTask extends TimerTask {
 			bulk.insert(item.toDBObject());
 		bulk.execute();
 	} //insertBbsItem
-	
-//	private List<Long> findUnstoredArticle(){
-//		String collectionName=String.format("bbsItem_%s", bbsName);
-//		DBCollection coll=MongoDbAdapter.getInstance().getCollection(collectionName);	
-//		
-//		List<Long> unstoredArticleNums=new ArrayList<Long>();
-//		for(DBObject unstoredArticleNum : coll.find(new BasicDBObject("article", null), new BasicDBObject("num", 1)))
-//			unstoredArticleNums.add((Long)unstoredArticleNum.get("num"));
-//		return unstoredArticleNums;
-//	} //findUnstoredArticle
-//	
-//	private boolean updateArticle(long num, ArticleItem article){
-//		String collectionName=String.format("bbsItem_%s", bbsName);
-//		DBCollection coll=MongoDbAdapter.getInstance().getCollection(collectionName);
-//		
-//		DBObject whereQueryDbObj=(DBObject)JSON.parse(String.format("{num : { $eq : %s }}", num));
-//		BasicDBObject storedDbObj=(BasicDBObject) coll.find(whereQueryDbObj).next();
-//		if(storedDbObj==null) {
-//			logger.warn("failed to update article, bbs item with num {} does not exists");
-//			return false;
-//		} //if
-//		
-//		BbsItem storedBbsItem=new BbsItem(storedDbObj);
-//		
-//		storedBbsItem.setArticle(article);
-//		coll.update(whereQueryDbObj, storedBbsItem.toDBObject());
-//		return true;
-//	} //updateArticle
 } // class
