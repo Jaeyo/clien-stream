@@ -52,7 +52,7 @@
 <script src="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/js/jquery.js"></script>
 <script src="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/js/bootstrap.min.js"></script>
 <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
-<script src="<c:url value="/resource/js/home.js?ver=25" /> "></script>
+<script src="<c:url value="/resource/js/home.js?ver=27" /> "></script>
 <script type="text/javascript">
 var controller;
 var wsController;
@@ -60,6 +60,74 @@ var view;
 var model;
 
 function Controller(){
+	this.getFixedBbsItems=function(){
+		$.ajax({
+			url : "http://${pageContext.request.serverName}:${webPort}/${contextName}/getFixedBbsItem/" + model.bbsName,
+			type : "get",
+			success : function(data){
+				if(data.success==0){
+					console.log("getFixedBbsItem success");
+					console.error("failed to get fixedBbsItems for " + model.bbsName);
+					return;
+				} //if
+				console.log("get fixedBbsItems : " + data.count);
+				
+				if(data.count==0)
+					return;
+				
+				var items=data.data;
+				var fixedContentsArea=$("#fixed_contents");
+					
+				fixedContentsArea.html("");
+				for(i=0; i<items.length; i++){
+					itemDOM=bbsUtil.objToHtml(items[i]);
+					bbsUtil.registerClickEvent(itemDOM, view, controller, model.afterClickColor);
+					fixedContentsArea.append(itemDOM);
+				} //for i
+			}, //success
+			error : function(e){
+				console.error("getFixedBbsItem failed");
+				console.error(e);
+			}, //error
+			dataType : "json",
+			cache : "false"
+		});
+	} //getFixedBbsItems
+	
+	this.putFixedBbsItem=function(itemDOM, num){
+		$.ajax({
+			url : "http://${pageContext.request.serverName}:${webPort}/${contextName}/putFixedBbsItem/" + model.bbsName + "/" + num,
+			type : "get",
+			success : function(data){
+				console.log("putFixedBbsItem success for " + num);
+				$("#fixed_contents").append($(itemDOM));
+				itemDOM.remove();
+			}, //success
+			error : function(e){
+				console.error("putFixedBbsItem failed for " + num);
+				console.error(e);
+			}, //error
+			dataType : "json",
+			cache : "false"
+		});
+	} //putFixedBbsItem
+	
+	this.removeFixedBbsItem=function(num){
+		$.ajax({
+			url : "http://${pageContext.request.serverName}:${webPort}/${contextName}/removeFixedBbsItem/" + model.bbsName + "/" + num,
+			type : "get",
+			success : function(data){
+				console.log("removeFixedBbsItem success for " + num);
+				console.log(data);
+			}, //success
+			error : function(e){
+				console.error("removeFixedBbsItem failed for "  + num);
+				console.error(e);
+			}, //error
+			dataType : "json",
+			cache : "false"
+		});
+	} //removeFixedBbsItem
 } //Controller
 
 function WsController(){
@@ -80,8 +148,8 @@ function WsController(){
 	} //onclose
 	
 	this.requestMsging=function(){
-		jsonMsg=new Object();
-		jsonMsg.bbsName="${bbsName}";
+		bbsItem_PARK_fixed_27ba36cc87d54d9bb6c833fe95d42937		jsonMsg=new Object();
+		jsonMsg.bbsName=model.bbsName;
 		this.waitForSocketConnection(function(){
 			wsController.socket.send(JSON.stringify(jsonMsg));
 		});
@@ -106,26 +174,8 @@ function WsController(){
 } //WsController
 
 
+
 function View(){
-	this.showFixedItems=function(){
-		var storedFixedContents=storedb("fixedContents").find();
-		var fixedContentsHtml=$("<div />");
-		
-		console.log("storedFixedContents.length : " + storedFixedContents.length); 
-		
-		for(i=0; i<storedFixedContents.length; i++){
-			var bbsItemObj=storedFixedContents[i];
-			var bbsItemHtml=bbsUtil.objToHtml(bbsItemObj);
-			fixedContentsHtml.append(bbsItemHtml);
-		} //for i
-		
-		$("#fixed_contents").html(fixedContentsHtml.html());
-		
-		var bbsItemArr=$("#fixed_contents").find("div.bbsItem");
-		for(i=0; i<bbsItemArr.length; i++)
-			bbsUtil.registerClickEvent(bbsItemArr[i], view, model.afterClickColor);
-	} //showFixedItems
-	
 	this.showNewItems=function(){
 		var newItemCount=model.newItemArr.length;
 		if(newItemCount==0)
@@ -140,7 +190,7 @@ function View(){
 		for(i=0; i<newItemCount; i++){
 			var newItemObj=reversedNewItemArr[i];
 			var newItemDOM=bbsUtil.objToHtml(newItemObj);
-			bbsUtil.registerClickEvent(newItemDOM, view, model.afterClickColor);
+			bbsUtil.registerClickEvent(newItemDOM, view, controller, model.afterClickColor);
 			
 			newItemDOM.hide();
 			$("#contents").append(newItemDOM);
@@ -199,6 +249,7 @@ function Model(){
 	this.afterClickColor="rgb(230, 230, 230)";
 	this.clienBlue="rgb(55, 66, 155)";
 	this.maxItemCount=17;
+	this.bbsName="${bbsName}";
 	
 	this.storeNewItem=function(itemObj){
 		model.newItemArr.push(itemObj);
@@ -216,7 +267,7 @@ model=new Model();
 $("#preparedItemCount").css("color", model.clienBlue);
 
 wsController.requestMsging();
-view.showFixedItems();
+controller.getFixedBbsItems();
 </script>
 
 </body>

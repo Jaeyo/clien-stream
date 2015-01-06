@@ -3,6 +3,7 @@ package org.jaeyo.clien_stream.controller;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import org.jaeyo.clien_stream.JettyServer;
 import org.jaeyo.clien_stream.common.Conf;
 import org.jaeyo.clien_stream.common.ConfKey;
 import org.jaeyo.clien_stream.consts.BbsNames;
@@ -36,6 +37,8 @@ public class HomeController {
 	public ModelAndView home(HttpServletRequest request, @PathVariable(value="bbsName") String bbsName){
 		ModelAndView mv=new ModelAndView("home");
 		mv.addObject("wsPort", Conf.get(ConfKey.WEB_SOCKET_PORT));
+		mv.addObject("webPort", Conf.get(ConfKey.PORT));
+		mv.addObject("contextName", JettyServer.MVC_CONTEXT_NAME);
 		mv.addObject("bbsName", bbsName);
 		return mv;
 	} //home

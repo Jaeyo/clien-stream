@@ -19,7 +19,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 public class JettyServer {
 	private static final Logger logger = LoggerFactory.getLogger(JettyServer.class);
 	
-	private static final String MVC_SERVLET_NAME = "clien";
+	public static final String MVC_CONTEXT_NAME = "clien";
 
 	private Server server;
 
@@ -47,14 +47,14 @@ public class JettyServer {
 	} //join
 
 	private WebAppContext getWebAppContext(){
-		ServletHolder mvcServletHolder = new ServletHolder(MVC_SERVLET_NAME, new DispatcherServlet());
+		ServletHolder mvcServletHolder = new ServletHolder(MVC_CONTEXT_NAME, new DispatcherServlet());
 		mvcServletHolder.setInitParameter("contextConfigLocation", "spring-servlet.xml"); 
 
 		WebAppContext context=new WebAppContext();
 		context.setClassLoader(Thread.currentThread().getContextClassLoader());
 		context.addServlet(mvcServletHolder, "/");
 		context.setResourceBase(Conf.getWebInfPath().getAbsolutePath()); 
-		context.setContextPath("/" + MVC_SERVLET_NAME);
+		context.setContextPath("/" + MVC_CONTEXT_NAME);
 		return context;
 	} //getWebAppContext
 	
@@ -70,7 +70,7 @@ public class JettyServer {
 	} //enableJstl
 
 	private ServletContextHandler getServletHandler() {
-		ServletHolder mvcServletHolder = new ServletHolder(MVC_SERVLET_NAME, new DispatcherServlet());
+		ServletHolder mvcServletHolder = new ServletHolder(MVC_CONTEXT_NAME, new DispatcherServlet());
 		
 		mvcServletHolder.setInitParameter("contextConfigLocation", "spring-servlet.xml");
 

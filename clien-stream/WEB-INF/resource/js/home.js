@@ -2,7 +2,7 @@ var bbsUtil;
 var homeUtil;
 
 function BbsUtil(){
-	this.registerClickEvent=function(item, view, afterClickColor){
+	this.registerClickEvent=function(item, view, controller, afterClickColor){
 		var bbsName=item.find("input.bbs_name").attr("value");
 		var num=item.find("div.item_num").text();
 		var title=item.find("div.item_title").text();
@@ -15,22 +15,12 @@ function BbsUtil(){
 			
 		item.find("a.delete_item").click(function(){
 			item.remove();
-			storedb("fixedContents").remove({"num" : num});
-			view.showFixedItems();
+			controller.removeFixedBbsItem(num);
 			return false;
 		});
 			
 		item.find("a.fix_item").click(function(){
-			//check duplicate
-			if(storedb("fixedContents").find({"num" : num}).length!=0){
-				console.log("failed to fix item, already exsits");
-				return false;
-			} //if
-			
-			var itemObj=bbsUtil.htmlToObj(item);
-			storedb("fixedContents").insert(itemObj);
-			item.remove();
-			view.showFixedItems();
+			controller.putFixedBbsItem(item, num);
 			return false;
 		});
 	} //registerClickEvent

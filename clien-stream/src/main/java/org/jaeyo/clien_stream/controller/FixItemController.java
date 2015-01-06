@@ -31,8 +31,8 @@ public class FixItemController {
 	@Inject
 	FixItemService fixItemService;
 
-	@RequestMapping(value = "/putFixBbsItem/{bbsName}/{num}", method = RequestMethod.GET)
-	public @ResponseBody String putFixBbsItem(HttpServletRequest request, HttpServletResponse response,
+	@RequestMapping(value = "/putFixedBbsItem/{bbsName}/{num}", method = RequestMethod.GET)
+	public @ResponseBody String putFixedBbsItem(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable(value = "bbsName") String bbsName,
 			@PathVariable(value = "num") String num) {
 		long numLong;
@@ -66,10 +66,10 @@ public class FixItemController {
 		} // if
 
 		return new JSONObject().put("success", 1).toString();
-	} // putFixBbsItem
+	} // putFixedBbsItem
 
-	@RequestMapping(value = "/getFixBbsItem/{bbsName}", method = RequestMethod.GET)
-	public @ResponseBody String getFixBbsItems(HttpServletRequest request, HttpServletResponse response,
+	@RequestMapping(value = "/getFixedBbsItem/{bbsName}", method = RequestMethod.GET)
+	public @ResponseBody String getFixedBbsItems(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable(value = "bbsName") String bbsName) {
 		List<BbsItem> bbsItems = fixItemService.getFixedItems(BbsNames.valueOf(bbsName.toUpperCase()), request);
 		if (bbsItems == null) {
@@ -83,13 +83,12 @@ public class FixItemController {
 		
 		for (BbsItem bbsItem : bbsItems)
 			retJson.append("data", bbsItem.toJSON());
-
-//		return new JSONObject().put("success", "1").put("data", dataArr).toString();
+		
 		return retJson.toString();
-	} // getFixBbsItems
+	} // getFixedBbsItems
 
-	@RequestMapping(value = "/removeFixBbsItem/{bbsName}/{num}", method = RequestMethod.GET)
-	public @ResponseBody String getFixBbsItems(HttpServletRequest request, HttpServletResponse response,
+	@RequestMapping(value = "/removeFixedBbsItem/{bbsName}/{num}", method = RequestMethod.GET)
+	public @ResponseBody String removeFixedBbsItems(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable(value = "bbsName") String bbsName,
 			@PathVariable(value = "num") String num) {
 		long numLong;
@@ -110,5 +109,5 @@ public class FixItemController {
 		} // if
 
 		return new JSONObject().put("success", 1).toString();
-	} // getFixBbsItems
+	} // removeFixedBbsItems
 } // class

@@ -22,8 +22,8 @@ import com.mongodb.WriteResult;
 
 @Service
 public class FixItemService extends AbstractService {
-	private static final Logger logger=LoggerFactory.getLogger(FixItemService.class);
-	
+	private static final Logger logger = LoggerFactory.getLogger(FixItemService.class);
+
 	public boolean putFixedItems(BbsNames bbsName, BbsItem bbsItem, HttpServletResponse response,
 			HttpServletRequest request) {
 		try {
@@ -31,8 +31,7 @@ public class FixItemService extends AbstractService {
 
 			if (persistenceSessionid == null) {
 				persistenceSessionid = generatePersistenceSessionId();
-				response.addCookie(CookieUtil.createCookie("persistenceSessionId", persistenceSessionid, "/",
-						60 * 60 * 24 * 365));
+				response.addCookie(CookieUtil.createCookie("persistenceSessionId", persistenceSessionid, "/", 60 * 60 * 24 * 365));
 			} // if
 
 			String collectionName = String.format("bbsItem_%s_fixed_%s", bbsName, persistenceSessionid);
